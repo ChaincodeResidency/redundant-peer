@@ -1,0 +1,7 @@
+{
+  "log_format": ":method :url :status - :response-time ms - :user-agent",
+  "memory_check_ms": 5000,
+  "node_memory_limit": 475,
+  "port": 11509
+}
+

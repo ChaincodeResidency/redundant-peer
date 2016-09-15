@@ -1,0 +1,6 @@
+*~
+.DS_Store
+.monitor
+credentials.json
+node_modules
+

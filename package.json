@@ -1,0 +1,24 @@
+{
+  "dependencies": {
+    "async": "2.0.1",
+    "bitcoin": "3.0.1",
+    "compression": "1.6.2",
+    "express": "4.13.4",
+    "morgan": "1.7.0",
+    "response-time": "2.3.1",
+    "underscore": "1.8.3",
+    "walnut": "0.0.2"
+  },
+  "devDependencies": {
+    "vows": "0.8.1"
+  },
+  "engines": {
+    "node": "6.5.0",
+    "npm": "3.10.3"
+  },
+  "main": "app.js",
+  "name": "redundant-peer",
+  "private": true,
+  "version": "0.0.1"
+}
+
