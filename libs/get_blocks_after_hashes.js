@@ -70,6 +70,8 @@ module.exports = (args, cbk) => {
       "isAlreadyBestHash",
       (res, go_on) =>
     {
+      if (!!res.isAlreadyBestHash) { return go_on(); }
+
       let gotAllHashesAfterHash = false;
       let moreRecentHashes = [res.getBestBlockHash];
 
@@ -103,6 +105,8 @@ module.exports = (args, cbk) => {
     }],
 
     getBlocksAfterHash: ["getHashesAfterHash", (res, go_on) => {
+      if (!!res.isAlreadyBestHash) { return go_on(); }
+
       return asyncMap(res.getHashesAfterHash, (hash, gotBlock) => {
         return getBlock({hash: hash}, gotBlock);
       },

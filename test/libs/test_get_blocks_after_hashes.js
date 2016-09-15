@@ -8,12 +8,32 @@ const libs = "./../../libs/";
 
 const getBestBlockHash = require(libs + "get_best_block_hash");
 const getBlock = require(libs + "get_block")
-const getBlocksAfterHashes = require(libs + "get_blocks_after_hashes");
+const getNewerBlocks = require(libs + "get_blocks_after_hashes");
 const getPrecedingBlockHash = require(libs + "get_preceding_block_hash");
 
 vows
   .describe("Test Get Blocks After Hashes")
   .addBatch({
+    "When getting blocks after the most recent block": {
+      topic: function() {
+        return auto({
+          getBestBlockHash: (go_on) => {
+            return getBestBlockHash({}, go_on);
+          },
+
+          getNewerBlocks: ["getBestBlockHash", (res, go_on) => {
+            return getNewerBlocks({hashes: [res.getBestBlockHash]}, go_on);
+          }]
+        },
+        this.callback);
+      },
+
+      "no blocks are returned": (err, res) => {
+        assert.deepEqual(err, null);
+
+        assert.deepEqual(!!res.getNewerBlocks, false);
+      }
+    },
     "When getting the blocks after hashes": {
       topic: function() {
         return auto({
@@ -33,12 +53,12 @@ vows
             return getPrecedingBlockHash({hash: res.getBlockHashB}, go_on);
           }],
 
-          getBlocksAfterHashes: [
+          getNewerBlocks: [
             "getBlockHashB",
             "getBlockHashC",
             (res, go_on) =>
           {
-            return getBlocksAfterHashes({
+            return getNewerBlocks({
               hashes: [res.getBlockHashC, res.getBlockHashB]
             },
             go_on);
@@ -50,7 +70,7 @@ vows
       "more current blocks are returned": (err, res) => {
         assert.deepEqual(null, err);
 
-        const blocks = res.getBlocksAfterHashes;
+        const blocks = res.getNewerBlocks;
 
         assert.isArray(blocks);
 
