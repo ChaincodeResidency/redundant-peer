@@ -17,6 +17,7 @@
     "node": "6.5.0",
     "npm": "3.10.3"
   },
+  "license": "MIT",
   "main": "app.js",
   "name": "redundant-peer",
   "private": true,
