@@ -24,7 +24,7 @@ module.exports = (args, cbk) => {
       method: args.method,
       params: args.params || []
     }],
-    function(err, response) {
+    (err, response) => {
       if (!!err) { return cbk([500, "Bitcoin Core Data", err]); }
 
       return cbk(null, response);

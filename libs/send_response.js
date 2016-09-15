@@ -3,6 +3,7 @@ const _ = require("underscore");
 const logError = require("./log_error");
 
 const codes = require("./../conf/http_status_codes");
+const configuration = require("./../conf/server");
 
 /** Respond to a request
 
@@ -18,7 +19,7 @@ const codes = require("./../conf/http_status_codes");
 
   Note: Errors passed should be [<Int> code, <Str> message, <Data> extra info]
 */
-module.exports.respond = (args) => {
+module.exports = (args) => {
   return function(err, body) {
     if (!args.res) {
       return logError({err: [codes.server_error, "Missing res"]});
@@ -29,7 +30,7 @@ module.exports.respond = (args) => {
     if (hasNonstandardError) {
       logError({err: [codes.server_error, "Invalid error", err]});
 
-      return res.status(codes.server_error).send();
+      return args.res.status(codes.server_error).send();
     }
 
     if (!!err) {
@@ -39,19 +40,19 @@ module.exports.respond = (args) => {
 
       if (hasServerError) { logError({err: err}); }
 
-      const errorMessage = err[1] || "Unexpected error";
+      const errorMsg = err[1] || "Unexpected error";
 
-      _(() => { return res.status(errorCode).send({error: errorMessage}); })
-        .delay(1000);
+      _(() => { return args.res.status(errorCode).send({error: errorMsg}); })
+        .delay(configuration.error_delay_ms);
 
       return;
     }
 
     const hasNoContent = !body || (Array.isArray(body) && !body.length);
 
-    if (hasNoContent) { return res.status(codes.no_content).send(); }
+    if (hasNoContent) { return args.res.status(codes.no_content).send(); }
 
-    return res.send(body);
+    return args.res.send(body);
   }
 };
 

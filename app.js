@@ -27,7 +27,7 @@ setInterval(() => {
   const memoryUsage = Math.round(process.memoryUsage().rss / 1024 / 1024);
 
   // Do not allow this process to exceed memory limit
-  if (memoryUsage > NODE_MEMORY_LIMIT) { process.exit(); }
+  if (memoryUsage > configuration.node_memory_limit) { process.exit(); }
 },
 configuration.memory_check_ms);
 

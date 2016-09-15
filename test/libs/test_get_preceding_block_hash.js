@@ -3,8 +3,10 @@ const assert = require("assert");
 const auto = require("async/auto");
 const vows = require("vows");
 
-const getBestBlockHash = require("./../../libs/get_best_block_hash");
-const getPrecedingBlockHash = require("./../../libs/get_preceding_block_hash");
+const libsPath = "./../../libs/";
+
+const getBestBlockHash = require(libsPath + "get_best_block_hash");
+const getPrecedingBlockHash = require(libsPath + "get_preceding_block_hash");
 
 vows
   .describe("Test Get Previous Block Hash")

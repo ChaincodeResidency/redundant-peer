@@ -41,7 +41,7 @@ const codes = require("./../conf/http_status_codes");
   // When the client is too out of date and the server can't handle it, 500
   [500, {max_depth_supported: <Max Old Blocks Supported Int>}]
 */
-module.exports = function(args, cbk) {
+module.exports = (args, cbk) => {
   return auto({
     validateArguments: (go_on) => {
       if (!Array.isArray(args.hashes)) {
@@ -102,11 +102,15 @@ module.exports = function(args, cbk) {
         });
     }],
 
-    blocksAfterHash: ["getHashesAfterHash", (res, go_on) => {
+    getBlocksAfterHash: ["getHashesAfterHash", (res, go_on) => {
       return asyncMap(res.getHashesAfterHash, (hash, gotBlock) => {
         return getBlock({hash: hash}, gotBlock);
       },
       go_on);
+    }],
+
+    blocksAfterHash: ["getBlocksAfterHash", (res, go_on) => {
+      return go_on(null, res.getBlocksAfterHash);
     }]
   },
   returnResult({result: "blocksAfterHash"}, cbk));

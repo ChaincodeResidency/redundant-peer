@@ -10,7 +10,7 @@ vows
   .addBatch({
     "When returning the result of an automatic control flow": {
       topic: function() {
-        auto({
+        return auto({
           returnedResult: (go_on) => {
             return auto({
               a: (val) => { return val(); },

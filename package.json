@@ -3,8 +3,9 @@
     "async": "2.0.1",
     "bitcoin": "3.0.1",
     "compression": "1.6.2",
-    "express": "4.13.4",
+    "express": "4.14.0",
     "morgan": "1.7.0",
+    "request": "2.74.0",
     "response-time": "2.3.1",
     "underscore": "1.8.3",
     "walnut": "0.0.2"

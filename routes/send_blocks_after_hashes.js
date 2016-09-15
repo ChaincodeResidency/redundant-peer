@@ -9,14 +9,13 @@ const sendResponse = require("./../libs/send_response");
   }
 
   @returns
-  [{
-    serialized_block: <String>
-  }]
+  [
+    <Serialized Block String>
+  ]
 */
 module.exports = (req, res) => {
-  return getBlocksAfterHashes({
-    hashes: (req.params.hashes || "").split(",")
-  },
-  sendResponse({res: res}));
+  const hashes = (req.params.hashes || "").split(",");
+
+  return getBlocksAfterHashes({hashes}, sendResponse({res}));
 };
 
