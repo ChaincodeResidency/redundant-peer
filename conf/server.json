@@ -1,4 +1,6 @@
 {
+  "api_version": "v0",
+  "default_serialized_blocks_count": 20,
   "error_delay_ms": 1000,
   "log_format": ":method :url :status - :response-time ms - :user-agent",
   "memory_check_ms": 5000,

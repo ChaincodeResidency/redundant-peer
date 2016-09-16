@@ -1,11 +1,12 @@
+const checkDependencyVersions = require("walnut").check;
 const compress = require("compression")();
 const express = require("express");
 const logger = require("morgan");
 const responseTime = require("response-time");
-const walnut = require("walnut");
 
 const v0 = require("./routes/main");
 
+const appPackage = require("./package");
 const configuration = require("./conf/server");
 
 const app = express();
@@ -19,9 +20,9 @@ app.use(compress);
 app.use(responseTime());
 app.use(logger(configuration.log_format));
 
-app.use("/v0", v0);
+app.use(`/${configuration.api_version}`, v0);
 
-if (env !== "production") { walnut.check(require("./package")); }
+if (env !== "production") { checkDependencyVersions(appPackage); }
 
 setInterval(() => {
   const memoryUsage = Math.round(process.memoryUsage().rss / 1024 / 1024);

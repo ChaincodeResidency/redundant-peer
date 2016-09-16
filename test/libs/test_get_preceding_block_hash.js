@@ -1,4 +1,6 @@
-const assert = require("assert");
+const assertDeepEqual = require("assert").deepEqual;
+const assertIsString = require("assert").isString;
+const assertNotDeepEqual = require("assert").notDeepEqual;
 
 const auto = require("async/auto");
 const vows = require("vows");
@@ -26,11 +28,11 @@ vows
       },
 
       "the block is returned": (err, res) => {
-        assert.deepEqual(null, err);
+        assertDeepEqual(null, err);
 
-        assert.isString(res.getPrecedingBlockHash);
+        assertIsString(res.getPrecedingBlockHash);
 
-        assert.notDeepEqual(res.getBestBlockHash, res.getPrecedingBlockHash);
+        assertNotDeepEqual(res.getBestBlockHash, res.getPrecedingBlockHash);
 
         return;
       }

@@ -17,19 +17,18 @@ const codes = require("./../conf/http_status_codes");
 
   {
     hashes: Array<Block Hash String>
+    [limit]: <Maximum Blocks Number>
   }
 
   @returns via cbk
 
   // Blocks that came after the hashes listed
   {
-    blocks: [{serialized_block: <Serialized Block Hex String>}]
-    has_more: <Bool>
+    best_block_hash: <Chain Tip Hash String>
+    [blocks]: [{serialized_block: <Serialized Block Hex String>}]
+    has_more: <More Block Results Bool>
+    highest_block_hash: <Most Recent Block Retrieved Hash String>
   }
-
-  OR
-
-  null // When these hashes are already the latest
 
   OR
 
@@ -94,29 +93,62 @@ module.exports = (args, cbk) => {
               return gotHash(null, gotAllHashesAfterHash = true);
             }
 
-            return gotHash(null, moreRecentHashes.push(hash));
+            moreRecentHashes.push(hash);
+
+            return gotHash();
           });
         },
         (err) => {
           if (!!err) { return go_on(err); }
 
-          return go_on(null, moreRecentHashes);
+          return go_on(null, moreRecentHashes.reverse());
         });
     }],
 
-    getBlocksAfterHash: ["getHashesAfterHash", (res, go_on) => {
+    hashesWithinLimit: [
+      "getHashesAfterHash",
+      "isAlreadyBestHash",
+      (res, go_on) =>
+    {
       if (!!res.isAlreadyBestHash) { return go_on(); }
 
-      return asyncMap(res.getHashesAfterHash, (hash, gotBlock) => {
+      return go_on(null, res.getHashesAfterHash.slice(0, args.limit));
+    }],
+
+    highestBlockHash: ["hashesWithinLimit", (res, go_on) => {
+      if (!!res.isAlreadyBestHash) { return go_on(); }
+
+      return go_on(null, _(res.hashesWithinLimit).last());
+    }],
+
+    getBlocksAfterHash: ["hashesWithinLimit", (res, go_on) => {
+      if (!!res.isAlreadyBestHash) { return go_on(); }
+
+      return asyncMap(res.hashesWithinLimit, (hash, gotBlock) => {
         return getBlock({hash: hash}, gotBlock);
       },
       go_on);
     }],
 
-    blocksAfterHash: ["getBlocksAfterHash", (res, go_on) => {
-      return go_on(null, res.getBlocksAfterHash);
+    result: [
+      "getBlocksAfterHash",
+      "getHashesAfterHash",
+      "highestBlockHash",
+      (res, go_on) =>
+    {
+      const newerHashes = res.getHashesAfterHash;
+      const newerBlocks = res.getBlocksAfterHash;
+
+      const hasMore = !!newerHashes && newerHashes.length > newerBlocks.length;
+
+      return go_on(null, {
+        best_block_hash: res.getBestBlockHash,
+        blocks: res.getBlocksAfterHash,
+        has_more: hasMore,
+        highest_block_hash: res.highestBlockHash
+      });
     }]
   },
-  returnResult({result: "blocksAfterHash"}, cbk));
+  returnResult({result: "result"}, cbk));
 };
 

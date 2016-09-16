@@ -8,7 +8,10 @@
   1. Bob requests updates from Alice
   2. Alice indicates that there are no updates to be had
 */
-const assert = require("assert");
+const assertDeepEqual = require("assert").deepEqual;
+const assertIsUndefined = require("assert").isUndefined;
+const assertIsObject = require("assert").isObject;
+const assertIsString = require("assert").isString;
 
 const auto = require("async/auto");
 const vows = require("vows");
@@ -17,7 +20,7 @@ const libsPath = "./../../libs/";
 const testPath = "./../";
 
 const getBestBlockHash = require(libsPath + "get_best_block_hash");
-const requestBlocks = require(testPath + "macros/request_blocks_after_hashes");
+const requestBlocks = require(testPath + "macros/request_newer_blocks");
 
 vows
   .describe("Confirm up-to-date")
@@ -37,9 +40,15 @@ vows
       },
 
       "Alice returns that there are no new blocks": (err, res) => {
-        assert.deepEqual(err, null);
+        assertDeepEqual(err, null);
 
-        assert(!res.getUpdatesFromAlice);
+        assertIsUndefined(res.getUpdatesFromAlice.blocks);
+
+        assertIsObject(res.getUpdatesFromAlice.links);
+
+        assertIsString(res.getUpdatesFromAlice.links.current);
+
+        assertIsUndefined(res.getUpdatesFromAlice.links.next);
 
         return;
       }

@@ -8,7 +8,8 @@
   1. Bob requests updates from Alice (fake a has no b)
   2. Bob adds updates from Alice into his blockchain (stop faking "no b")
 */
-const assert = require("assert");
+const assertDeepEqual = require("assert").deepEqual;
+const assertIsArray = require("assert").isArray;
 
 const _ = require("underscore");
 const auto = require("async/auto");
@@ -21,7 +22,7 @@ const getBestBlockHash = require(libsPath + "get_best_block_hash");
 const getBlock = require(libsPath + "get_block");
 const getPrecedingBlockHash = require(libsPath + "get_preceding_block_hash");
 const importUpdated = require(testPath + "macros/import_updated_blocks");
-const requestBlocks = require(testPath + "macros/request_blocks_after_hashes");
+const requestBlocks = require(testPath + "macros/request_newer_blocks");
 
 vows
   .describe("Basic Catchup")
@@ -46,22 +47,24 @@ vows
           }],
 
           importBlocks: ["getUpdatesFromAlice", (res, go_on) => {
-            return importUpdated({blocks: res.getUpdatesFromAlice}, go_on);
+            const blocks = res.getUpdatesFromAlice.blocks;
+
+            return importUpdated({blocks}, go_on);
           }]
         },
         this.callback);
       },
 
       "Alice returns Bob the missing block": (err, res) => {
-        assert.deepEqual(err, null);
+        assertDeepEqual(err, null);
 
-        const missingBlocks = res.getUpdatesFromAlice;
+        const missingBlocks = res.getUpdatesFromAlice.blocks;
 
-        assert.isArray(missingBlocks);
+        assertIsArray(missingBlocks);
 
-        assert.deepEqual(missingBlocks.length, [res.getAliceTipHash].length);
+        assertDeepEqual(missingBlocks.length, [res.getAliceTipHash].length);
 
-        assert.deepEqual(_(missingBlocks).first(), res.getAliceTipBlock);
+        assertDeepEqual(_(missingBlocks).first(), res.getAliceTipBlock);
 
         return;
       }

@@ -1,4 +1,4 @@
-const assert = require("assert");
+const assertDeepEqual = require("assert").deepEqual;
 
 const auto = require("async/auto");
 const vows = require("vows");
@@ -31,7 +31,7 @@ vows
       },
 
       "the block is imported": (err, res) => {
-        assert.deepEqual(null, err);
+        assertDeepEqual(null, err);
 
         return;
       }

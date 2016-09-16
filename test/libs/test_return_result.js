@@ -1,4 +1,4 @@
-const assert = require("assert");
+const assertDeepEqual = require("assert").deepEqual;
 
 const auto = require("async/auto");
 const vows = require("vows");
@@ -24,9 +24,9 @@ vows
       },
 
       "the result is returned": (err, res) => {
-        assert.deepEqual(err, null);
+        assertDeepEqual(err, null);
 
-        assert.deepEqual(res, {returnedResult: true});
+        assertDeepEqual(res, {returnedResult: true});
 
         return;
       }

@@ -1,4 +1,5 @@
-const assert = require("assert");
+const assertDeepEqual = require("assert").deepEqual;
+const assertIsArray = require("assert").isArray;
 
 const _ = require("underscore");
 const auto = require("async/auto");
@@ -29,9 +30,15 @@ vows
       },
 
       "no blocks are returned": (err, res) => {
-        assert.deepEqual(err, null);
+        assertDeepEqual(err, null);
 
-        assert.deepEqual(!!res.getNewerBlocks, false);
+        const newerBlocks = res.getNewerBlocks;
+
+        assertDeepEqual(newerBlocks.has_more, false);
+
+        assertDeepEqual(res.getBestBlockHash, newerBlocks.best_block_hash);
+
+        assertDeepEqual(!!newerBlocks.blocks, false);
       }
     },
     "When getting the blocks after hashes": {
@@ -68,15 +75,17 @@ vows
       },
 
       "more current blocks are returned": (err, res) => {
-        assert.deepEqual(null, err);
+        assertDeepEqual(null, err);
 
-        const blocks = res.getNewerBlocks;
+        const blocks = res.getNewerBlocks.blocks;
 
-        assert.isArray(blocks);
+        assertIsArray(blocks);
 
-        assert.deepEqual(blocks.length, [res.getBlockHashA].length);
+        assertDeepEqual(res.getNewerBlocks.has_more, false);
 
-        assert.deepEqual(_(blocks).first(), res.getBlockA);
+        assertDeepEqual(blocks.length, [res.getBlockHashA].length);
+
+        assertDeepEqual(_(blocks).first(), res.getBlockA);
 
         return;
       }

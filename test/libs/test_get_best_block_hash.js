@@ -1,4 +1,5 @@
-const assert = require("assert");
+const assertDeepEqual = require("assert").deepEqual;
+const assertIsString = require("assert").isString;
 
 const vows = require("vows");
 
@@ -13,11 +14,11 @@ vows
       },
 
       "the latest block hash is returned": (err, hash) => {
-        assert.deepEqual(null, err);
+        assertDeepEqual(null, err);
 
-        assert.deepEqual(true, !!hash);
-        assert(typeof hash === "string");
-        assert.deepEqual(hash[0], "0");
+        assertDeepEqual(true, !!hash);
+        assertIsString(hash);
+        assertDeepEqual(hash[0], "0");
       }
     }
   })
