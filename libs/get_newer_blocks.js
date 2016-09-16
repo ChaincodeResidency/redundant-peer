@@ -1,10 +1,12 @@
 const _ = require("underscore");
+const asyncConstant = require("async/constant");
 const asyncMap = require("async/map");
 const auto = require("async/auto");
-const until = require("async/until");
 
+const findLaterHashes = require("./find_later_hashes");
 const getBestBlockHash = require("./get_best_block_hash");
 const getBlock = require("./get_block");
+const getFirstBlockHash = require("./get_first_block_hash");
 const getPrecedingBlockHash = require("./get_preceding_block_hash");
 const returnResult = require("./return_result");
 
@@ -12,10 +14,8 @@ const codes = require("./../conf/http_status_codes");
 
 /** Get blocks that are after hashes
 
-  FIXME: - server error: no hash and the last hash isn't genesis
-  FIXME: - user error: no hash match found
-
   {
+    [catchup_limit]: <Maximum Depth to Search>
     hashes: Array<Block Hash String>
     [limit]: <Maximum Blocks Number>
   }
@@ -33,22 +33,21 @@ const codes = require("./../conf/http_status_codes");
   OR
 
   // When all hashes are unknown, pull back + indicate other hashes to try
-  [404, {hashes: Array<Hash String>}]
-
-  OR
-
-  // When the client is too out of date and the server can't handle it, 500
-  [500, {max_depth_supported: <Max Old Blocks Supported Int>}]
+  [404, {error: {hashes: Array<Hash String>}}]
 */
 module.exports = (args, cbk) => {
   return auto({
     validateArguments: (go_on) => {
       if (!Array.isArray(args.hashes)) {
-        return go_on([500, "Expected array of hashes"]);
+        return go_on([codes.server_error, "Expected array of hashes"]);
       }
 
       if (!args.hashes.length) {
-        return go_on([400, "Expected at least one hash"]);
+        return go_on([codes.bad_request, "Expected at least one hash"]);
+      }
+
+      if (!!args.limit && !parseInt(args.limit)) {
+        return go_on([codes.bad_request, "Expected reasonable limit"]);
       }
 
       return go_on();
@@ -64,45 +63,26 @@ module.exports = (args, cbk) => {
       return go_on(null, _(args.hashes).contains(res.getBestBlockHash));
     }],
 
+    getFirstBlockHash: ["isAlreadyBestHash", (res, go_on) => {
+      if (!!res.isAlreadyBestHash) { return go_on(); }
+
+      return getFirstBlockHash({max_depth: args.catchup_limit}, go_on);
+    }],
+
     getHashesAfterHash: [
       "getBestBlockHash",
+      "getFirstBlockHash",
       "isAlreadyBestHash",
       (res, go_on) =>
     {
       if (!!res.isAlreadyBestHash) { return go_on(); }
 
-      let gotAllHashesAfterHash = false;
-      let moreRecentHashes = [res.getBestBlockHash];
-
-      until(
-        () => {
-          return gotAllHashesAfterHash;
-        },
-        (gotHash) => {
-          return getPrecedingBlockHash({
-            hash: _(moreRecentHashes).last()
-          },
-          (err, hash) => {
-            if (!!err) { return gotHash(err); }
-
-            if (!hash) {
-              return gotHash([codes.server_error, "Expected hash"]);
-            }
-
-            if (_(args.hashes).contains(hash)) {
-              return gotHash(null, gotAllHashesAfterHash = true);
-            }
-
-            moreRecentHashes.push(hash);
-
-            return gotHash();
-          });
-        },
-        (err) => {
-          if (!!err) { return go_on(err); }
-
-          return go_on(null, moreRecentHashes.reverse());
-        });
+      return findLaterHashes({
+        after: res.getFirstBlockHash,
+        before: res.getBestBlockHash,
+        hashes: args.hashes
+      },
+      go_on);
     }],
 
     hashesWithinLimit: [
@@ -112,7 +92,11 @@ module.exports = (args, cbk) => {
     {
       if (!!res.isAlreadyBestHash) { return go_on(); }
 
-      return go_on(null, res.getHashesAfterHash.slice(0, args.limit));
+      const limit = parseInt(args.limit);
+
+      if (!limit) { return go_on(null, res.getHashesAfterHash); }
+
+      return go_on(null, res.getHashesAfterHash.slice(0, limit));
     }],
 
     highestBlockHash: ["hashesWithinLimit", (res, go_on) => {

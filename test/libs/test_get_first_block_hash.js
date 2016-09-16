@@ -3,14 +3,14 @@ const assertIsString = require("assert").isString;
 
 const vows = require("vows");
 
-const getBestBlockHash = require("./../../libs/get_best_block_hash");
+const getFirstBlockHash = require("./../../libs/get_best_block_hash");
 
 vows
-  .describe("Test Get Block Hash")
+  .describe("Test Get First Hash")
   .addBatch({
-    "When pulling the latest block hash": {
+    "When pulling the first block hash": {
       topic: function() {
-        return getBestBlockHash({}, this.callback);
+        return getFirstBlockHash({}, this.callback);
       },
 
       "the latest block hash is returned": (err, hash) => {

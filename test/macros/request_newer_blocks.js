@@ -7,6 +7,7 @@ const server = require("./../../conf/server");
 /** Make an HTTP request to get blocks after a hash
 
   {
+    [expect]: <HTTP Status code to expect>
     hashes: Array<Hash String>
     [limit]: <Maximum Blocks to Return Number>
     [next]: <More Blocks String>
@@ -32,26 +33,26 @@ module.exports = (args, cbk) => {
     qs: {limit: args.limit},
     url: `${service}${path}`
   },
-  (err, r, blocks) => {
+  (err, r, body) => {
     if (!!err) { return cbk([0, "Connection error", err]); }
 
     if (!r || !r.headers || !r.statusCode) {
       return cbk([0, "Expected headers, status"]);
     }
 
-    const parsedLinks = parseLinkHeader(r.headers.link);
+    const parsedLinks = parseLinkHeader(r.headers.link) || {};
 
     let links = {};
 
-    if (parsedLinks.current && parsedLinks.current.url) {
+    if (!!parsedLinks.current && !!parsedLinks.current.url) {
       links.current = parsedLinks.current.url;
     }
 
-    if (parsedLinks.next && parsedLinks.next.url) {
+    if (!!parsedLinks.next && !!parsedLinks.next.url) {
       links.next = parsedLinks.next.url;
     }
 
-    return cbk(null, {blocks, links});
+    return cbk(null, {links, blocks: body});
   });
 };
 

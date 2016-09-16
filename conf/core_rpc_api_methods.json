@@ -1,6 +1,8 @@
 {
   "get_best_block_hash": "getbestblockhash",
   "get_block": "getblock",
+  "get_block_hash": "getblockhash",
+  "get_blockchain_info": "getblockchaininfo",
   "submit_block": "submitblock"
 }
 

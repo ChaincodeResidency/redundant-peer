@@ -1,5 +1,7 @@
 {
+  "bad_request": 400,
   "no_content": 204,
+  "not_found": 404,
   "server_error": 500
 }
 

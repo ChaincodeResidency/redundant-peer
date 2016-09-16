@@ -1,10 +1,12 @@
 const BitcoinCoreClient = require("bitcoin").Client;
 
-const CREDENTIALS = require("./../credentials");
+const credentials = require("./../credentials");
+
+const codes = require("./../conf/http_status_codes");
 
 const client = new BitcoinCoreClient({
-  pass: CREDENTIALS.bitcoin_core_rpc_password,
-  user: CREDENTIALS.bitcoin_core_rpc_user
+  pass: credentials.bitcoin_core_rpc_password,
+  user: credentials.bitcoin_core_rpc_user
 });
 
 /** Make a request to the local Bitcoin Core
@@ -20,12 +22,17 @@ const client = new BitcoinCoreClient({
 module.exports = (args, cbk) => {
   if (!args.method) { return cbk([0, "Expected method", args]); }
 
-  return client.cmd([{
-      method: args.method,
-      params: args.params || []
-    }],
-    (err, response) => {
-      if (!!err) { return cbk([500, "Bitcoin Core Data", err]); }
+  const method = args.method;
+  const params = args.params || [];
+
+  return client.cmd([{method, params}], (err, response) => {
+      if (!!err) {
+        return cbk([
+          codes.server_error,
+          "Bitcoin Core Data",
+          {code: err.code, message: err.message}
+        ]);
+      }
 
       return cbk(null, response);
     });

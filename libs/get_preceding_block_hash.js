@@ -10,6 +10,10 @@ const codes = require("./../conf/http_status_codes");
 
   @returns via cbk
   <Block Hash String>
+
+  OR
+
+  <null> // When the previous block is not stored
 */
 module.exports = (args, cbk) => {
   if (!args.hash) { return cbk([codes.server_error, "Expected hash"]); }

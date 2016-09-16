@@ -1,5 +1,7 @@
 const assertDeepEqual = require("assert").deepEqual;
 const assertIsArray = require("assert").isArray;
+const assertIsNumber = require("assert").isNumber;
+const assertIsUndefined = require("assert").isUndefined;
 
 const _ = require("underscore");
 const auto = require("async/auto");
@@ -9,12 +11,44 @@ const libs = "./../../libs/";
 
 const getBestBlockHash = require(libs + "get_best_block_hash");
 const getBlock = require(libs + "get_block")
-const getNewerBlocks = require(libs + "get_blocks_after_hashes");
+const getNewerBlocks = require(libs + "get_newer_blocks");
 const getPrecedingBlockHash = require(libs + "get_preceding_block_hash");
 
+const codes = require("./../../conf/http_status_codes");
+
 vows
-  .describe("Test Get Blocks After Hashes")
+  .describe("Test Get Newer Blocks")
   .addBatch({
+    "When getting blocks after a hash that doesn't exist": {
+      topic: function() {
+        return auto({
+          getBestBlockHash: (go_on) => {
+            return getBestBlockHash({}, go_on);
+          },
+
+          getNewerBlocks: ["getBestBlockHash", (res, go_on) => {
+            const fakeHash = res.getBestBlockHash.replace(/[abcde]/, "f");
+
+            return getNewerBlocks({
+              catchup_limit: [fakeHash].length,
+              hashes: [fakeHash],
+            },
+            go_on);
+          }]
+        },
+        this.callback);
+      },
+
+      "suggestion hashes are returned": (err, res) => {
+        assertIsArray(err);
+
+        assertDeepEqual(err[0], codes.not_found);
+
+        assertIsArray(err[1].hashes);
+
+        assertIsUndefined(err[2]);
+      }
+    },
     "When getting blocks after the most recent block": {
       topic: function() {
         return auto({
