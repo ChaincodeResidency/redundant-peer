@@ -1,3 +1,4 @@
+const bodyParser = require("body-parser");
 const checkDependencyVersions = require("walnut").check;
 const compress = require("compression")();
 const express = require("express");
@@ -27,6 +28,7 @@ app.listen(port, () => { return console.log("Listening on " + port); });
 
 app.disable("x-powered-by");
 app.use(compress);
+app.use(bodyParser.json({limit: configuration.max_service_receive_limit}));
 app.use(responseTime());
 app.use(logger(configuration.log_format));
 

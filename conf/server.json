@@ -5,6 +5,7 @@
   "error_delay_ms": 10,
   "log_format": ":method :url :status - :response-time ms - :user-agent",
   "max_service_serialized_blocks_count": 10,
+  "max_service_receive_limit": "5mb",
   "memory_check_ms": 5000,
   "node_memory_limit": 475,
   "port": 11509,
