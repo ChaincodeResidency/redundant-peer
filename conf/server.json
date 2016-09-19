@@ -1,12 +1,13 @@
 {
   "api_version": "v0",
-  "service_block_catchup_limit": 5,
+  "service_block_catchup_limit": 144,
   "default_serialized_blocks_count": 5,
   "error_delay_ms": 10,
   "log_format": ":method :url :status - :response-time ms - :user-agent",
   "max_service_serialized_blocks_count": 10,
   "memory_check_ms": 5000,
   "node_memory_limit": 475,
-  "port": 11509
+  "port": 11509,
+  "refresh_delay_ms": 10000
 }
 

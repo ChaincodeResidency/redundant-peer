@@ -35,7 +35,7 @@ module.exports = function(args, cbk) {
     getBestBlockHash: (go_on) => {
       if (!!args.path) { return go_on(); }
 
-      return getBestBlockhash({}, go_on);
+      return getBestBlockHash({}, go_on);
     },
 
     getPath: ["getBestBlockHash", (res, go_on) => {
@@ -45,15 +45,11 @@ module.exports = function(args, cbk) {
 
       if (!blockHash) { return go_on([codes.server_error, "Expected hash"]); }
 
-      return go_on(null, pathForNewerBlocks({after_block: blockHash}));
+      return go_on(null, pathForNewerBlocks({after_hash: blockHash}));
     }],
 
     requestNewerBlocks: ["getPath", (res, go_on) => {
-      return makeGetBlocksRequest({
-        host: `http://localhost:${server.port}`,
-        path: res.getPath
-      },
-      go_on);
+      return makeGetBlocksRequest({host: args.host, path: res.getPath}, go_on);
     }],
 
     importBlocks: ["requestNewerBlocks", (res, go_on) => {
