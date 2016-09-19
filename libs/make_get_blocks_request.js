@@ -29,7 +29,7 @@ module.exports = (args, cbk) => {
     url: `${args.host}${args.path}`
   },
   (err, r, body) => {
-    if (!!err) { return go_on([codes.server_error, "Blocks Error", err]); }
+    if (!!err) { return cbk([codes.server_error, "Blocks Error", err]); }
 
     const statusCode = !!r ? r.statusCode : null;
 
