@@ -6,7 +6,7 @@ const getPrecedingBlockHash = require("./get_preceding_block_hash");
 
 const codes = require("./../conf/http_status_codes");
 
-/** Find the common hashes between the local chain and a group of hashes
+/** Find the newer hashes after a group of hashes
 
   {
     after: <Block Hash String>
@@ -19,7 +19,7 @@ const codes = require("./../conf/http_status_codes");
 */
 module.exports = (args, cbk) => {
   let gotAll = false;
-  let moreRecentHashes = [args.before];
+  const moreRecent = [args.before];
 
   return until(
     () => {
@@ -27,10 +27,10 @@ module.exports = (args, cbk) => {
     },
     (go_on) => {
       return getPrecedingBlockHash({
-        hash: _(moreRecentHashes).last()
+        hash: _(moreRecent).last()
       },
       (err, hash) => {
-        if (!!err) { console.log("GOT ERR", err); return go_on(err); }
+        if (!!err) { return go_on(err); }
 
         if (!hash) { return go_on([codes.server_error, "Expected hash"]); }
 
@@ -41,10 +41,10 @@ module.exports = (args, cbk) => {
         const firstLocalHashFound = hash === args.after;
 
         if (firstLocalHashFound) {
-          return go_on([codes.not_found, {hashes: moreRecentHashes}]);
+          return go_on([codes.not_found, {hashes: moreRecent.reverse()}]);
         }
 
-        moreRecentHashes.push(hash);
+        moreRecent.push(hash);
 
         return go_on();
       });
@@ -52,7 +52,7 @@ module.exports = (args, cbk) => {
     (err) => {
       if (!!err) { return cbk(err); }
 
-      return cbk(null, moreRecentHashes.reverse());
+      return cbk(null, moreRecent.reverse());
     });
 };
 

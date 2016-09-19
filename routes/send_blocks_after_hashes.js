@@ -33,6 +33,11 @@ const serverConf = require("./../conf/server");
   404: {error: {hashes: Array<Other Block Hashes To Try>}} // Try these hashes?
 */
 module.exports = (req, res) => {
+  const limit = Math.max(
+    serverConf.max_service_serialized_blocks_count,
+    req.query.limit || serverConf.default_serialized_blocks_count
+  );
+
   return getNewerBlocks({
     catchup_limit: serverConf.service_block_catchup_limit,
     hashes: (req.params.hashes || "").split(","),

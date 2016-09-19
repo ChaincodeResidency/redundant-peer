@@ -22,7 +22,7 @@ module.exports = (args, cbk) => {
 
     firstHeight: ["getChainInfo", (res, go_on) => {
       const currentHeight = res.getChainInfo.blocks;
-      const localHeight = res.getChainInfo.pruneHeight || 0;
+      const localHeight = res.getChainInfo.pruneheight || [].length;
 
       if (!!args.max_depth) {
         const maxDepthHeight = currentHeight - args.max_depth;

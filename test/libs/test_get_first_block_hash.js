@@ -1,8 +1,10 @@
 const assertDeepEqual = require("assert").deepEqual;
 const assertIsString = require("assert").isString;
 
+const auto = require("async/auto");
 const vows = require("vows");
 
+const getBlock = require("./../../libs/get_block");
 const getFirstBlockHash = require("./../../libs/get_best_block_hash");
 
 vows
@@ -10,17 +12,26 @@ vows
   .addBatch({
     "When pulling the first block hash": {
       topic: function() {
-        return getFirstBlockHash({}, this.callback);
+        return auto({
+          getFirstBlockHash: (go_on) => {
+            return getFirstBlockHash({}, go_on);
+          },
+
+          getBlock: ["getFirstBlockHash", (res, go_on) => {
+            return getBlock({hash: res.getFirstBlockHash}, go_on);
+          }]
+        },
+        this.callback);
       },
 
-      "the latest block hash is returned": (err, hash) => {
+      "there are no errors": (err, res) => {
         assertDeepEqual(null, err);
+      },
 
-        assertDeepEqual(true, !!hash);
+      "the latest block hash is returned": (err, res) => {
+        assertIsString(res.getFirstBlockHash);
 
-        assertIsString(hash);
-
-        assertDeepEqual(hash[0], "0");
+        assertDeepEqual(res.getFirstBlockHash[0], "0");
       }
     }
   })

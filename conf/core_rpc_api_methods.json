@@ -3,6 +3,7 @@
   "get_block": "getblock",
   "get_block_hash": "getblockhash",
   "get_blockchain_info": "getblockchaininfo",
+  "get_info": "getinfo",
   "submit_block": "submitblock"
 }
 

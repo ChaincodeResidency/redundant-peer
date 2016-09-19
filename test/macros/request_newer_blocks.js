@@ -40,9 +40,8 @@ module.exports = (args, cbk) => {
       return cbk([0, "Expected headers, status"]);
     }
 
+    const links = {};
     const parsedLinks = parseLinkHeader(r.headers.link) || {};
-
-    let links = {};
 
     if (!!parsedLinks.current && !!parsedLinks.current.url) {
       links.current = parsedLinks.current.url;

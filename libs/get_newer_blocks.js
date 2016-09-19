@@ -58,7 +58,9 @@ module.exports = (args, cbk) => {
     }],
 
     isAlreadyBestHash: ["getBestBlockHash", (res, go_on) => {
-      if (!res.getBestBlockHash) { return go_on([500, "Missing best hash"]); }
+      if (!res.getBestBlockHash) {
+        return go_on([codes.server_error, "Missing best hash"]);
+      }
 
       return go_on(null, _(args.hashes).contains(res.getBestBlockHash));
     }],

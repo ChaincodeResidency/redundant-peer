@@ -4,6 +4,7 @@ const express = require("express");
 const logger = require("morgan");
 const responseTime = require("response-time");
 
+const enforceMemoryLimit = require("./libs/enforce_memory_limit");
 const v0 = require("./routes/main");
 
 const appPackage = require("./package");
@@ -12,6 +13,11 @@ const configuration = require("./conf/server");
 const app = express();
 const env = process.env.NODE_ENV;
 const port = process.env.PORT || configuration.port;
+
+enforceMemoryLimit({
+  check_interval: configuration.memory_check_ms,
+  memory_limit: configuration.node_memory_limit,
+});
 
 app.listen(port, () => { return console.log("Listening on " + port); });
 
@@ -23,12 +29,4 @@ app.use(logger(configuration.log_format));
 app.use(`/${configuration.api_version}`, v0);
 
 if (env !== "production") { checkDependencyVersions(appPackage); }
-
-setInterval(() => {
-  const memoryUsage = Math.round(process.memoryUsage().rss / 1024 / 1024);
-
-  // Do not allow this process to exceed memory limit
-  if (memoryUsage > configuration.node_memory_limit) { process.exit(); }
-},
-configuration.memory_check_ms);
 
