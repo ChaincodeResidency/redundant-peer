@@ -6,7 +6,7 @@ const asyncConstant = require("async/constant");
 const auto = require("async/auto");
 const vows = require("vows");
 
-const getBlock = require("./../../libs/get_block");
+const getBestBlockHash = require("./../../libs/get_best_block_hash");
 const getFirstBlockHash = require("./../../libs/get_first_block_hash");
 const pathForNewerBlocks = require("./../../routes/path_for_newer_blocks");
 const refresh = require("./../../workers/refresh");
@@ -19,6 +19,10 @@ vows
     "When the refresh worker runs to get new block data": {
       topic: function() {
         return auto({
+          getBestBlockHash: (go_on) => {
+            return getBestBlockHash({}, go_on);
+          },
+
           getFirstBlockHash: (go_on) => {
             return getFirstBlockHash({
               max_depth: Math.min(
@@ -30,6 +34,13 @@ vows
           },
 
           host: asyncConstant(`http://localhost:${server.port}`),
+
+          pathForBestBlockHash: ["getBestBlockHash", (res, go_on) => {
+            return go_on(
+              null,
+              pathForNewerBlocks({after_hash: res.getBestBlockHash})
+            );
+          }],
 
           getRetryPath: ["host", (res, go_on) => {
             return refresh({
@@ -63,7 +74,7 @@ vows
       },
 
       "current path is current": (err, res) => {
-        assertDeepEqual(res.getNoBlocks, res.getMissingBlocks);
+        assertDeepEqual(res.getNoBlocks, res.pathForBestBlockHash);
       }
     }
   })
