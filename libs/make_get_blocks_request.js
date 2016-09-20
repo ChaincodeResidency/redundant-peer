@@ -37,6 +37,8 @@ module.exports = (args, cbk) => {
       return getHighestBlockHash({hashes: body.error.hashes}, (err, hash) => {
         if (!!err) { return cbk(err); }
 
+        if (!hash) { return cbk([codes.server_error, "Sync gap too great"]); }
+
         cbk(null, {iterate_path: pathForNewerBlocks({after_hash: hash})});
 
         return;
