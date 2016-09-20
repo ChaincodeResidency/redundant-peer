@@ -46,7 +46,7 @@ module.exports = (args, cbk) => {
         return go_on([codes.bad_request, "Expected at least one hash"]);
       }
 
-      if (!!args.limit && !parseInt(args.limit)) {
+      if (!!args.limit && !parseInt(args.limit, 10)) {
         return go_on([codes.bad_request, "Expected reasonable limit"]);
       }
 
@@ -94,7 +94,7 @@ module.exports = (args, cbk) => {
     {
       if (!!res.isAlreadyBestHash) { return go_on(); }
 
-      const limit = parseInt(args.limit);
+      const limit = parseInt(args.limit, 10);
 
       if (!limit) { return go_on(null, res.getHashesAfterHash); }
 
