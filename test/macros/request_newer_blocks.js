@@ -7,7 +7,6 @@ const server = require("./../../conf/server");
 /** Make an HTTP request to get blocks after a hash
 
   {
-    [expect]: <HTTP Status code to expect>
     hashes: Array<Hash String>
     [limit]: <Maximum Blocks to Return Number>
     [next]: <More Blocks String>

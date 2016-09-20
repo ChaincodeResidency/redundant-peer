@@ -2,7 +2,6 @@ const logError = require("./log_error");
 
 const codes = require("./../conf/http_status_codes");
 
-
 /** Return the result of an auto function
 
   {
