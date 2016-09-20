@@ -5,6 +5,7 @@ const express = require("express");
 const logger = require("morgan");
 const responseTime = require("response-time");
 
+const banNonstandardPeers = require("./workers/ban_nonstandard_peers");
 const enforceMemoryLimit = require("./libs/enforce_memory_limit");
 const pullFromRemotePeers = require("./workers/pull_from_remote_peers");
 const v0 = require("./routes/main");
@@ -22,14 +23,20 @@ enforceMemoryLimit({
   memory_limit: configuration.node_memory_limit,
 });
 
+banNonstandardPeers({});
+
 pullFromRemotePeers({remote_peers: credentials.remote_peers || []});
 
 app.listen(port, () => { return console.log("Listening on " + port); });
 
 app.disable("x-powered-by");
+
 app.use(compress);
+
 app.use(bodyParser.json({limit: configuration.max_service_receive_limit}));
+
 app.use(responseTime());
+
 app.use(logger(configuration.log_format));
 
 app.use(`/${configuration.api_version}`, v0);

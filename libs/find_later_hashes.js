@@ -3,6 +3,7 @@ const _ = require("underscore");
 const until = require("async/until");
 
 const getPrecedingBlockHash = require("./get_preceding_block_hash");
+const trimmedHashList = require("./trimmed_hash_list");
 
 const codes = require("./../conf/http_status_codes");
 
@@ -41,7 +42,9 @@ module.exports = (args, cbk) => {
         const firstLocalHashFound = hash === args.after;
 
         if (firstLocalHashFound) {
-          return go_on([codes.not_found, {hashes: moreRecent.reverse()}]);
+          const hashes = trimmedHashList({hashes: moreRecent.reverse()})
+
+          return go_on([codes.not_found, {hashes}]);
         }
 
         moreRecent.push(hash);

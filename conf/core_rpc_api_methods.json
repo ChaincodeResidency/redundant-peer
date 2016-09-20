@@ -4,6 +4,8 @@
   "get_block_hash": "getblockhash",
   "get_blockchain_info": "getblockchaininfo",
   "get_info": "getinfo",
+  "get_peer_info": "getpeerinfo",
+  "set_ban": "setban",
   "submit_block": "submitblock"
 }
 
