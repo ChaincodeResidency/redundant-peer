@@ -2,14 +2,10 @@ const BitcoinCoreClient = require("bitcoin").Client;
 
 const hasLocalCore = require("./has_local_core");
 
-const credentials = require("./../credentials");
-
 const codes = require("./../conf/http_status_codes");
 
-const client = new BitcoinCoreClient({
-  pass: credentials.bitcoin_core_rpc_password,
-  user: credentials.bitcoin_core_rpc_user
-});
+let client = null;
+let credentials = null;
 
 /** Make a request to the local Bitcoin Core
 
@@ -29,6 +25,13 @@ module.exports = (args, cbk) => {
   if (!hasLocalCore({})) {
     return cbk([codes.server_error, "Expected local Core"]);
   }
+
+  credentials = credentials || require("./../credentials")
+
+  const pass = credentials.bitcoin_core_rpc_password;
+  const user = credentials.bitcoin_core_rpc_user;
+
+  client = client || new BitcoinCoreClient({pass, user});
 
   const method = args.method;
   const params = args.params || [];
