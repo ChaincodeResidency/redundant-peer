@@ -6,7 +6,14 @@ const sendResponse = require("./../libs/send_response");
 const codes = require("./../conf/http_status_codes");
 const server = require("./../conf/server");
 
+const unlockKey = process.env.REDUNDANT_PEER_SECRET;
+
 /** Receive new blocks
+
+  @req.params
+  {
+    override_key: <String>
+  }
 
   @req.body
   Array<Block String>
@@ -18,8 +25,10 @@ module.exports = (req, res) => {
     return commitResponse([codes.bad_request, "Expected blocks array"]);
   }
 
+  const trust = !!unlockKey && req.params.override_key === unlockKey;
+
   return eachSeries(req.body, (block, go_on) => {
-    return importBlock({block}, go_on);
+    return importBlock({block, trust}, go_on);
   },
   (err) => {
     if (!!err) { return commitResponse(err); }

@@ -12,11 +12,14 @@ const method = require("./../conf/core_rpc_api_methods");
 
   {
     block: <Hex String>
+    [trust]: <Bool> = false // Allow entry to cache without Core validation
   }
 */
 module.exports = (args, cbk) => {
   return auto({
     confirmHasLocalCore: (go_on) => {
+      if (!!args.trust) { return go_on(); }
+
       if (!hasLocalCore({})) {
         return go_on([codes.not_implemented, "Expected local Core"]);
       }

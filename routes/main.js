@@ -9,5 +9,7 @@ router.get("/blocks/after/:hashes/", sendBlocksAfterHashes);
 
 router.post("/blocks/", receiveBlocks);
 
+router.post("/blocks/:override_key/", receiveBlocks);
+
 module.exports = router;
 

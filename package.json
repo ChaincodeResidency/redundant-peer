@@ -21,7 +21,7 @@
     "npm": "3.10.3"
   },
   "license": "MIT",
-  "main": "app.js",
+  "main": "server.js",
   "name": "redundant-peer",
   "private": true,
   "scripts": {
