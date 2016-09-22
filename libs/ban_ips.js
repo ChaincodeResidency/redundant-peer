@@ -1,5 +1,6 @@
 const each = require("async/each");
 
+const hasLocalCore = require("./has_local_core");
 const makeCoreRequest = require("./make_bitcoin_core_request");
 
 const codes = require("./../conf/http_status_codes");
@@ -17,6 +18,8 @@ module.exports = (args, cbk) => {
   if (!Array.isArray(args.ips)) {
     return cbk([codes.server_error, "Expected array of ips"]);
   }
+
+  if (!hasLocalCore({})) { return cbk(); }
 
   return each(args.ips, (ip, go_on) => {
     return makeCoreRequest({

@@ -1,8 +1,9 @@
-const getBlock = require("./get_block");
+const makeCoreRequest = require("./make_bitcoin_core_request");
 
 const codes = require("./../conf/http_status_codes");
+const methods = require("./../conf/core_rpc_api_methods");
 
-const previousHashes = {};
+const blockchainCache = require("./../cache/blockchain_cache");
 
 /** Get the block hash before a hash
 
@@ -20,19 +21,23 @@ const previousHashes = {};
 module.exports = (args, cbk) => {
   if (!args.hash) { return cbk([codes.server_error, "Expected hash"]); }
 
-  // Exit early when the previous hash is cached
-  if (!!previousHashes[args.hash]) {
-    return cbk(null, previousHashes[args.hash]);
-  }
+  const cachedPreviousHash = blockchainCache.previous_hashes[args.hash];
 
-  return getBlock({hash: args.hash, json: true}, (err, block) => {
+  // Exit early when the previous hash is cached
+  if (!!cachedPreviousHash) { return cbk(null, cachedPreviousHash); }
+
+  return makeCoreRequest({
+    method: methods.get_block,
+    params: [args.hash, true]
+  },
+  (err, block) => {
     if (!!err) { return cbk(err); }
 
     if (!block.previousblockhash) {
       return cbk([codes.server_error, "Expected previous hash", block]);
     }
 
-    previousHashes[args.hash] = block.previousblockhash;
+    blockchainCache.previous_hashes[args.hash] = block.previousblockhash;
 
     return cbk(null, block.previousblockhash);
   });

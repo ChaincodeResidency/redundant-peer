@@ -1,7 +1,7 @@
 const parseLinkHeader = require("parse-link-header");
 const request = require("request");
 
-const getHighestBlockHash = require("./get_highest_block_hash");
+const getHighestBlockHash = require("./../libs/get_highest_block_hash");
 const pathForNewerBlocks = require("./../routes/path_for_newer_blocks");
 
 const codes = require("./../conf/http_status_codes");

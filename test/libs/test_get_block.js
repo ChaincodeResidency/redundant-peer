@@ -20,23 +20,17 @@ vows
           getRawBlock: ["getBestBlockHash", (res, go_on) => {
             return getBlock({hash: res.getBestBlockHash}, go_on);
           }],
-
-          getBlockJSON: ["getBestBlockHash", (res, go_on) => {
-            return getBlock({hash: res.getBestBlockHash, json: true}, go_on);
-          }]
         },
         this.callback);
       },
 
+      "no errors are encountered": (err, res) => {
+        return assertDeepEqual(null, err);
+      },
+
       "the block is returned": (err, res) => {
-        assertDeepEqual(null, err);
-
-        assertIsString(res.getRawBlock);
-
-        assertDeepEqual(res.getBestBlockHash, res.getBlockJSON.hash);
-
-        return;
-      }
+        return assertIsString(res.getRawBlock);
+      },
     }
   })
   .export(module); // Run it

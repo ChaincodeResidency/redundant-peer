@@ -13,9 +13,11 @@ vows
         return getBestBlockHash({}, this.callback);
       },
 
-      "the latest block hash is returned": (err, hash) => {
+      "there is no error": (err, hash) => {
         assertDeepEqual(null, err);
+      },
 
+      "the latest block hash is returned": (err, hash) => {
         assertDeepEqual(true, !!hash);
 
         assertIsString(hash);

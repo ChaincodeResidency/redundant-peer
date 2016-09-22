@@ -7,7 +7,7 @@ const request = require("request");
 const getBestBlockHash = require("./../libs/get_best_block_hash");
 const importBlock = require("./../libs/import_block");
 const logError = require("./../libs/log_error");
-const makeGetBlocksRequest = require("./../libs/make_get_blocks_request");
+const makeGetBlocksRequest = require("./make_get_blocks_request");
 const pathForNewerBlocks = require("./../routes/path_for_newer_blocks");
 const returnResult = require("./../libs/return_result");
 

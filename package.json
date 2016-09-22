@@ -2,6 +2,7 @@
   "dependencies": {
     "async": "2.0.1",
     "bitcoin": "3.0.1",
+    "bitcore-lib": "0.13.19",
     "body-parser": "1.15.2",
     "compression": "1.6.2",
     "express": "4.14.0",
@@ -16,13 +17,16 @@
     "vows": "0.8.1"
   },
   "engines": {
-    "node": "6.5.0",
+    "node": "6.6.0",
     "npm": "3.10.3"
   },
   "license": "MIT",
   "main": "app.js",
   "name": "redundant-peer",
   "private": true,
+  "scripts": {
+    "test": "vows test/libs/*"
+  },
   "version": "0.0.2"
 }
 

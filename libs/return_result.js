@@ -5,6 +5,7 @@ const codes = require("./../conf/http_status_codes");
 /** Return the result of an auto function
 
   {
+    [no_content]: <Bool> = false
     result: <String>
   }
 
@@ -16,6 +17,8 @@ module.exports = (args, cbk) => {
     if (!cbk) { return logError({err: [codes.server_error, "Expected cbk"]}); }
 
     if (!!err) { return cbk(err); }
+
+    if (!!args.no_content) { return cbk(); }
 
     if (!args.result) {
       return cbk([codes.server_error, "Expected result key"]);

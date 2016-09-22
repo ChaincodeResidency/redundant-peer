@@ -1,5 +1,7 @@
 const BitcoinCoreClient = require("bitcoin").Client;
 
+const hasLocalCore = require("./has_local_core");
+
 const credentials = require("./../credentials");
 
 const codes = require("./../conf/http_status_codes");
@@ -20,21 +22,27 @@ const client = new BitcoinCoreClient({
   <Response Object>
 */
 module.exports = (args, cbk) => {
-  if (!args.method) { return cbk([0, "Expected method", args]); }
+  if (!args.method) {
+    return cbk([codes.server_error, "Expected method", args]);
+  }
+
+  if (!hasLocalCore({})) {
+    return cbk([codes.server_error, "Expected local Core"]);
+  }
 
   const method = args.method;
   const params = args.params || [];
 
   return client.cmd([{method, params}], (err, response) => {
-      if (!!err) {
-        return cbk([
-          codes.server_error,
-          "Bitcoin Core Data",
-          {code: err.code, message: err.message}
-        ]);
-      }
+    if (!!err) {
+      return cbk([
+        codes.server_error,
+        "Bitcoin Core Data",
+        {code: err.code, message: err.message}
+      ]);
+    }
 
-      return cbk(null, response);
-    });
+    return cbk(null, response);
+  });
 };
 

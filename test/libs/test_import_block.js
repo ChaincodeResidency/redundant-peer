@@ -24,6 +24,8 @@ vows
           }],
 
           importBlock: ["getBlock", (res, go_on) => {
+            if (!res.getBlock) { return go_on([0, "Expected block", res]); }
+
             return importBlock({block: res.getBlock}, go_on);
           }]
         },
