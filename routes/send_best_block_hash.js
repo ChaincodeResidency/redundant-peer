@@ -21,9 +21,11 @@ const httpCodes = require("./../conf/http_status_codes");
   [204] // There are no better hashes than the one sent
 */
 module.exports = (req, res) => {
+  const commitResponse = sendResponse({res});
+
   return auto({
     validateArguments: (go_on) => {
-      if (!res.params.hash) {
+      if (!req.params.hash) {
         return go_on([httpCodes.bad_request, "Expected block hash"]);
       }
 
@@ -35,8 +37,6 @@ module.exports = (req, res) => {
     }]
   },
   (err, res) => {
-    const commitResponse = sendResponse({res});
-
     if (!!err) { return commitResponse(err); }
 
     if (res.getBestBlockHash === req.params.hash) { return commitResponse(); }
