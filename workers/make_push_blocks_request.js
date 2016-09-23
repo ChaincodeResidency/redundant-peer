@@ -27,7 +27,7 @@ module.exports = (args, cbk) => {
       return cbk([httpCodes.server_error, "Submit blocks err", err]);
     }
 
-    if (!r || r.statusCode !== httpCodes.ok) {
+    if (!r || r.statusCode !== httpCodes.no_content) {
       return cbk([httpCodes.server_error, "Unexpected submit blocks err"]);
     }
 

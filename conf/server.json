@@ -10,7 +10,7 @@
   "memory_check_ms": 5000,
   "node_memory_limit": 475,
   "port": 11509,
-  "push_timeout_ms": 600000,
+  "push_timeout_ms": 10000,
   "refresh_delay_ms": 10000
 }
 
