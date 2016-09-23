@@ -20,6 +20,10 @@ const blockchainCache = require("./../cache/blockchain_cache");
 
   @returns via cbk
   <Block Object>
+
+  OR
+
+  <null> // When the block is not found
 */
 module.exports = (args, cbk) => {
   if (!args.hash) {
@@ -32,7 +36,7 @@ module.exports = (args, cbk) => {
     },
 
     getCoreBlock: ["getCachedBlock", (res, go_on) => {
-      if (!!res.getCachedBlock) { return go_on(); }
+      if (!!res.getCachedBlock || !hasLocalCore({})) { return go_on(); }
 
       return makeBitcoinCoreRequest({
         ignore_error_code: coreErrorCodes.invalid_address_or_key,
@@ -45,7 +49,7 @@ module.exports = (args, cbk) => {
     cacheCoreBlock: ["getCoreBlock", (res, go_on) => {
       if (!res.getCoreBlock) { return go_on(); }
 
-      return setCachedBlock({hash: args.hash, block: res.getCoreBlock}, go_on);
+      return setCachedBlock({block: res.getCoreBlock, hash: args.hash}, go_on);
     }],
 
     block: ["getCachedBlock", "getCoreBlock", (res, go_on) => {
