@@ -10,6 +10,7 @@ let credentials = null;
 /** Make a request to the local Bitcoin Core
 
   {
+    [ignore_error_code]: <Error Number>
     method: <Bitcoin Core RPC String>
     [params]: Array<Any>
   }
@@ -38,6 +39,8 @@ module.exports = (args, cbk) => {
 
   return client.cmd([{method, params}], (err, response) => {
     if (!!err) {
+      if (!!err.code && err.code === args.ignore_error_code) { return cbk(); }
+
       return cbk([
         httpCodes.server_error,
         "Bitcoin Core Data",

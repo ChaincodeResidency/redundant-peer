@@ -6,6 +6,7 @@ const makeBitcoinCoreRequest = require("./make_bitcoin_core_request");
 const returnResult = require("./return_result");
 const setCachedBlock = require("./set_cached_block");
 
+const coreErrorCodes = require("./../conf/core_error_codes");
 const httpCodes = require("./../conf/http_status_codes");
 const methods = require("./../conf/core_rpc_api_methods");
 
@@ -34,6 +35,7 @@ module.exports = (args, cbk) => {
       if (!!res.getCachedBlock) { return go_on(); }
 
       return makeBitcoinCoreRequest({
+        ignore_error_code: coreErrorCodes.invalid_address_or_key,
         method: methods.get_block,
         params: [args.hash, false]
       },

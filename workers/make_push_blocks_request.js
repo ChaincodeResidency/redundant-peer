@@ -7,6 +7,7 @@ const httpCodes = require("./../conf/http_status_codes");
   {
     blocks: Array<Hex Serialized Block String>
     host: <Host String>
+    [secret]: <String>
   }
 */
 module.exports = (args, cbk) => {
@@ -14,10 +15,12 @@ module.exports = (args, cbk) => {
     return cbk([httpCodes.server_error, "Expected blocks, and host"]);
   }
 
+  const trustPath = !!args.secret ? `${args.secret}/` : "";
+
   return request({
     json: args.blocks,
     method: "POST",
-    url: `${args.host}/v0/blocks/`
+    url: `${args.host}/v0/blocks/${trustPath}`
   },
   (err, r, hash) => {
     if (!!err) {
@@ -25,7 +28,7 @@ module.exports = (args, cbk) => {
     }
 
     if (!r || r.statusCode !== httpCodes.ok) {
-      return cbk([httpCodes.server_error, "Unexpected submit blocks code"]);
+      return cbk([httpCodes.server_error, "Unexpected submit blocks err"]);
     }
 
     return cbk();

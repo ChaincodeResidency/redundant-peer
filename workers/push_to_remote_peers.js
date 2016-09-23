@@ -1,3 +1,4 @@
+const auto = require("async/auto");
 const each = require("async/each");
 const forever = require("async/forever");
 
@@ -23,7 +24,7 @@ module.exports = (args) => {
   // Exit early when there are no cache peers to send data to
   if (!Array.isArray(credentials.cache_peers)) { return; }
 
-  return each(credentials.cache_peers, (peer, finishedPushing) {
+  return each(credentials.cache_peers, (peer, finishedPushing) => {
     return forever(
       (completedPush) => {
         let lastGuessHash;
@@ -56,7 +57,7 @@ module.exports = (args) => {
           getRemoteTipBlock: [
             "getRemoteBestBlockHash",
             "isRemoteAtBest",
-            (res, go_on)
+            (res, go_on) =>
           {
             if (!res.getRemoteBestBlockHash || !!res.isRemoteAtBest) {
               return go_on();
@@ -69,12 +70,12 @@ module.exports = (args) => {
           hasRemoteUnknownBlock: [
             "getRemoteTipBlock",
             "isRemoteAtBest",
-            (res, go_on)
+            (res, go_on) =>
           {
             const isUnknown = !res.isRemoteAtBest && !res.getRemoteTipBlock;
 
             return go_on(null, isUnknown);
-          }]
+          }],
 
           // When the remote best block is unknown, send the most recent block
           getBestGuessBlock: ["hasRemoteUnknownBlock", (res, go_on) => {
@@ -111,7 +112,7 @@ module.exports = (args) => {
           {
             if (!!res.isRemoteAtBest) { return go_on(null, []); }
 
-            const = bestGuessBlock = res.getBestGuessBlock;
+            const bestGuessBlock = res.getBestGuessBlock;
 
             // When sending a best guess block, only send it one time
             if (!!bestGuessBlock && res.getBestBlockHash === lastGuessHash) {
@@ -148,7 +149,7 @@ module.exports = (args) => {
             lastGuessHash = res.getBestBlockHash;
 
             return go_on();
-          }]
+          }],
         },
         (err) => {
           if (!!err) { logError({err: err}); }
@@ -159,7 +160,7 @@ module.exports = (args) => {
       finishedPushing
     );
   },
-  (err) {
+  (err) => {
     if (!!err) { return logError({err: err}); }
 
     return;

@@ -22,7 +22,7 @@ module.exports = (args, cbk) => {
   }
 
   return request({
-    url: `${args.host}/v0/best_hash_after/${hash}`
+    url: `${args.host}/v0/best_hash_after/${args.hash}`
   },
   (err, r, hash) => {
     if (!!err) { return cbk([httpCodes.server_error, "Get hash err", err]); }

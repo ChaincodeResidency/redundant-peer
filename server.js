@@ -9,6 +9,7 @@ const banNonstandardPeers = require("./workers/ban_nonstandard_peers");
 const hasLocalCore = require("./libs/has_local_core");
 const enforceMemoryLimit = require("./libs/enforce_memory_limit");
 const pullFromRemotePeers = require("./workers/pull_from_remote_peers");
+const pushToRemotePeers = require("./workers/push_to_remote_peers");
 const v0 = require("./routes/main");
 
 const appPackage = require("./package");
@@ -30,6 +31,8 @@ if (!!hasLocalCore({})) {
 
   pullFromRemotePeers({remote_peers: credentials.remote_peers || []});
 }
+
+pushToRemotePeers({});
 
 app.listen(port, () => { return console.log("Listening on " + port); });
 
