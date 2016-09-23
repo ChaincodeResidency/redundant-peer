@@ -10,7 +10,7 @@ const getFirstBlockHash = require("./get_first_block_hash");
 const getPrecedingBlockHash = require("./get_preceding_block_hash");
 const returnResult = require("./return_result");
 
-const codes = require("./../conf/http_status_codes");
+const httpCodes = require("./../conf/http_status_codes");
 
 /** Get blocks that are after hashes
 
@@ -39,15 +39,15 @@ module.exports = (args, cbk) => {
   return auto({
     validateArguments: (go_on) => {
       if (!Array.isArray(args.hashes)) {
-        return go_on([codes.server_error, "Expected array of hashes"]);
+        return go_on([httpCodes.server_error, "Expected array of hashes"]);
       }
 
       if (!args.hashes.length) {
-        return go_on([codes.bad_request, "Expected at least one hash"]);
+        return go_on([httpCodes.bad_request, "Expected at least one hash"]);
       }
 
       if (!!args.limit && !parseInt(args.limit, 10)) {
-        return go_on([codes.bad_request, "Expected reasonable limit"]);
+        return go_on([httpCodes.bad_request, "Expected reasonable limit"]);
       }
 
       return go_on();
@@ -59,7 +59,7 @@ module.exports = (args, cbk) => {
 
     isAlreadyBestHash: ["getBestBlockHash", (res, go_on) => {
       if (!res.getBestBlockHash) {
-        return go_on([codes.server_error, "Missing best hash"]);
+        return go_on([httpCodes.server_error, "Missing best hash"]);
       }
 
       return go_on(null, _(args.hashes).contains(res.getBestBlockHash));

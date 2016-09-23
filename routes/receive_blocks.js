@@ -3,7 +3,7 @@ const eachSeries = require("async/eachSeries");
 const importBlock = require("./../libs/import_block");
 const sendResponse = require("./../libs/send_response");
 
-const codes = require("./../conf/http_status_codes");
+const httpCodes = require("./../conf/http_status_codes");
 const server = require("./../conf/server");
 
 const unlockKey = process.env.REDUNDANT_PEER_SECRET;
@@ -22,7 +22,7 @@ module.exports = (req, res) => {
   const commitResponse = sendResponse({res});
 
   if (!Array.isArray(req.body)) {
-    return commitResponse([codes.bad_request, "Expected blocks array"]);
+    return commitResponse([httpCodes.bad_request, "Expected blocks array"]);
   }
 
   const trust = !!unlockKey && req.params.override_key === unlockKey;

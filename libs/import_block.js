@@ -5,7 +5,7 @@ const hasLocalCore = require("./has_local_core");
 const returnResult = require("./return_result");
 const setCachedBlock = require("./set_cached_block");
 
-const codes = require("./../conf/http_status_codes");
+const httpCodes = require("./../conf/http_status_codes");
 const method = require("./../conf/core_rpc_api_methods");
 
 /** Import a new block into the local blockchain
@@ -21,7 +21,7 @@ module.exports = (args, cbk) => {
       if (!!args.trust) { return go_on(); }
 
       if (!hasLocalCore({})) {
-        return go_on([codes.not_implemented, "Expected local Core"]);
+        return go_on([httpCodes.not_implemented, "Expected local Core"]);
       }
 
       return go_on();

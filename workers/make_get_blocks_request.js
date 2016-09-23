@@ -4,7 +4,7 @@ const request = require("request");
 const getHighestBlockHash = require("./../libs/get_highest_block_hash");
 const pathForNewerBlocks = require("./../routes/path_for_newer_blocks");
 
-const codes = require("./../conf/http_status_codes");
+const httpCodes = require("./../conf/http_status_codes");
 
 /** Make a request to get blocks
 
@@ -21,7 +21,7 @@ const codes = require("./../conf/http_status_codes");
 */
 module.exports = (args, cbk) => {
   if (!args.host || !args.path) {
-    return cbk([codes.server_error, "Expected host, and path"]);
+    return cbk([httpCodes.server_error, "Expected host, and path"]);
   }
 
   return request({
@@ -29,15 +29,17 @@ module.exports = (args, cbk) => {
     url: `${args.host}${args.path}`
   },
   (err, r, body) => {
-    if (!!err) { return cbk([codes.server_error, "Blocks Error", err]); }
+    if (!!err) { return cbk([httpCodes.server_error, "Blocks Error", err]); }
 
     const statusCode = !!r ? r.statusCode : null;
 
-    if (statusCode === codes.not_found && !!body && !!body.error) {
+    if (statusCode === httpCodes.not_found && !!body && !!body.error) {
       return getHighestBlockHash({hashes: body.error.hashes}, (err, hash) => {
         if (!!err) { return cbk(err); }
 
-        if (!hash) { return cbk([codes.server_error, "Sync gap too great"]); }
+        if (!hash) {
+          return cbk([httpCodes.server_error, "Sync gap too great"]);
+        }
 
         cbk(null, {iterate_path: pathForNewerBlocks({after_hash: hash})});
 
@@ -45,22 +47,22 @@ module.exports = (args, cbk) => {
       });
     }
 
-    if (statusCode === codes.no_content) {
+    if (statusCode === httpCodes.no_content) {
       return cbk(null, {iterate_path: args.path});
     }
 
     if (!r || !r.headers || !r.headers.link) {
-      return cbk([codes.server_error, "Expected link header"]);
+      return cbk([httpCodes.server_error, "Expected link header"]);
     }
 
     const parsedLinks = parseLinkHeader(r.headers.link) || {};
 
     if (!parsedLinks.current && !parsedLinks.next) {
-      return cbk([codes.server_error, "Expected link"]);
+      return cbk([httpCodes.server_error, "Expected link"]);
     }
 
     if (!Array.isArray(body)) {
-      return cbk([codes.server_error, "Expected blocks"]);
+      return cbk([httpCodes.server_error, "Expected blocks"]);
     }
 
     const blocks = body;
@@ -73,7 +75,7 @@ module.exports = (args, cbk) => {
       return cbk(null, {blocks, iterate_path: parsedLinks.next.url});
     }
 
-    return cbk([codes.server_error, "Expected path"]);
+    return cbk([httpCodes.server_error, "Expected path"]);
   });
 };
 

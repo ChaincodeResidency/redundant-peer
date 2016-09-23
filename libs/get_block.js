@@ -6,7 +6,7 @@ const makeBitcoinCoreRequest = require("./make_bitcoin_core_request");
 const returnResult = require("./return_result");
 const setCachedBlock = require("./set_cached_block");
 
-const codes = require("./../conf/http_status_codes");
+const httpCodes = require("./../conf/http_status_codes");
 const methods = require("./../conf/core_rpc_api_methods");
 
 const blockchainCache = require("./../cache/blockchain_cache");
@@ -21,7 +21,9 @@ const blockchainCache = require("./../cache/blockchain_cache");
   <Block Object>
 */
 module.exports = (args, cbk) => {
-  if (!args.hash) { return cbk([codes.server_error, "Expected hash", args]); }
+  if (!args.hash) {
+    return cbk([httpCodes.server_error, "Expected hash", args]);
+  }
 
   return auto({
     getCachedBlock: (go_on) => {

@@ -1,7 +1,7 @@
 const parseLinkHeader = require("parse-link-header");
 const request = require("request");
 
-const codes = require("./../../conf/http_status_codes");
+const httpCodes = require("./../../conf/http_status_codes");
 const server = require("./../../conf/server");
 
 /** Make an HTTP request to get blocks after a hash

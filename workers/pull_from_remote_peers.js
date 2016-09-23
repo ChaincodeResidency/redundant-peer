@@ -5,7 +5,7 @@ const forever = require("async/forever");
 const logError = require("./../libs/log_error");
 const refresh = require("./refresh");
 
-const codes = require("./../conf/http_status_codes");
+const httpCodes = require("./../conf/http_status_codes");
 const server = require("./../conf/server");
 
 /** Pull from remote peers
@@ -17,7 +17,7 @@ const server = require("./../conf/server");
 module.exports = (args) => {
   if (!Array.isArray(args.remote_peers)) {
     return logError({
-      err: [codes.server_error, "Expected array of remote peers"]
+      err: [httpCodes.server_error, "Expected array of remote peers"]
     });
   }
 

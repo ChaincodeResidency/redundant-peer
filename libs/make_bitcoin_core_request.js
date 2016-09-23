@@ -2,7 +2,7 @@ const BitcoinCoreClient = require("bitcoin").Client;
 
 const hasLocalCore = require("./has_local_core");
 
-const codes = require("./../conf/http_status_codes");
+const httpCodes = require("./../conf/http_status_codes");
 
 let client = null;
 let credentials = null;
@@ -19,11 +19,11 @@ let credentials = null;
 */
 module.exports = (args, cbk) => {
   if (!args.method) {
-    return cbk([codes.server_error, "Expected method", args]);
+    return cbk([httpCodes.server_error, "Expected method", args]);
   }
 
   if (!hasLocalCore({})) {
-    return cbk([codes.server_error, "Expected local Core"]);
+    return cbk([httpCodes.server_error, "Expected local Core"]);
   }
 
   credentials = credentials || require("./../credentials")
@@ -39,7 +39,7 @@ module.exports = (args, cbk) => {
   return client.cmd([{method, params}], (err, response) => {
     if (!!err) {
       return cbk([
-        codes.server_error,
+        httpCodes.server_error,
         "Bitcoin Core Data",
         {code: err.code, message: err.message}
       ]);

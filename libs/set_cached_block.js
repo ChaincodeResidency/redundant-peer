@@ -1,7 +1,7 @@
 const Block = require("bitcore-lib").Block;
 
 const cacheConfiguration = require("./../conf/cache");
-const codes = require("./../conf/http_status_codes");
+const httpCodes = require("./../conf/http_status_codes");
 
 const blockchainCache = require("./../cache/blockchain_cache");
 
@@ -15,15 +15,15 @@ module.exports = (args, cbk) => {
   const block = Block.fromString(args.block);
 
   if (!block || !block.header || !block.validMerkleRoot()) {
-    return cbk([codes.bad_request, "Expected valid merkle root"]);
+    return cbk([httpCodes.bad_request, "Expected valid merkle root"]);
   }
 
   if (!block.header.validProofOfWork()) {
-    return cbk([codes.bad_request, "Expected valid proof of work"]);
+    return cbk([httpCodes.bad_request, "Expected valid proof of work"]);
   }
 
   if (!block.header.validTimestamp()) {
-    return cbk([codes.bad_request, "Expected valid timestamp"]);
+    return cbk([httpCodes.bad_request, "Expected valid timestamp"]);
   }
 
   const cache = blockchainCache;

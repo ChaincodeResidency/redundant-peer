@@ -4,7 +4,7 @@ const getNewerBlocks = require("./../libs/get_newer_blocks");
 const pathForBlocks = require("./path_for_newer_blocks");
 const sendResponse = require("./../libs/send_response");
 
-const codes = require("./../conf/http_status_codes");
+const httpCodes = require("./../conf/http_status_codes");
 const serverConf = require("./../conf/server");
 
 /** Send a client blocks on the best chain after a hash
@@ -49,11 +49,11 @@ module.exports = (req, res) => {
     if (!!err) { return commitResponse(err); }
 
     if (!r.best_block_hash) {
-      return commitResponse([codes.server_error, "Expected best block hash"]);
+      return commitResponse([httpCodes.server_error, "Expected best hash"]);
     }
 
     if (!serverConf.api_version) {
-      return commitResponse([codes.server_error, "Expected version"]);
+      return commitResponse([httpCodes.server_error, "Expected version"]);
     }
 
     if (!r.has_more) {
@@ -75,7 +75,7 @@ module.exports = (req, res) => {
       });
     }
     else {
-      return commitResponse([codes.server_error, "Expected current or next"]);
+      return commitResponse([httpCodes.server_error, "Expected current/next"]);
     }
 
     return commitResponse(null, r.blocks);

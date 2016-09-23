@@ -14,7 +14,7 @@ const getBlock = require(libs + "get_block")
 const getNewerBlocks = require(libs + "get_newer_blocks");
 const getPrecedingBlockHash = require(libs + "get_preceding_block_hash");
 
-const codes = require("./../../conf/http_status_codes");
+const httpCodes = require("./../../conf/http_status_codes");
 
 vows
   .describe("Test Get Newer Blocks")
@@ -42,7 +42,7 @@ vows
       "suggestion hashes are returned": (err, res) => {
         assertIsArray(err);
 
-        assertDeepEqual(err[0], codes.not_found);
+        assertDeepEqual(err[0], httpCodes.not_found);
 
         assertIsArray(err[1].hashes);
 

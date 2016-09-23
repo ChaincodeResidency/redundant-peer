@@ -1,6 +1,6 @@
 const logError = require("./log_error");
 
-const codes = require("./../conf/http_status_codes");
+const httpCodes = require("./../conf/http_status_codes");
 
 /** Return the result of an auto function
 
@@ -14,14 +14,16 @@ const codes = require("./../conf/http_status_codes");
 */
 module.exports = (args, cbk) => {
   return (err, res) => {
-    if (!cbk) { return logError({err: [codes.server_error, "Expected cbk"]}); }
+    if (!cbk) {
+      return logError({err: [httpCodes.server_error, "Expected cbk"]});
+    }
 
     if (!!err) { return cbk(err); }
 
     if (!!args.no_content) { return cbk(); }
 
     if (!args.result) {
-      return cbk([codes.server_error, "Expected result key"]);
+      return cbk([httpCodes.server_error, "Expected result key"]);
     }
 
     return cbk(null, res[args.result]);

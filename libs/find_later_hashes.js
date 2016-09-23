@@ -5,7 +5,7 @@ const until = require("async/until");
 const getPrecedingBlockHash = require("./get_preceding_block_hash");
 const trimmedHashList = require("./trimmed_hash_list");
 
-const codes = require("./../conf/http_status_codes");
+const httpCodes = require("./../conf/http_status_codes");
 
 /** Find the newer hashes after a group of hashes
 
@@ -33,7 +33,7 @@ module.exports = (args, cbk) => {
       (err, hash) => {
         if (!!err) { return go_on(err); }
 
-        if (!hash) { return go_on([codes.server_error, "Expected hash"]); }
+        if (!hash) { return go_on([httpCodes.server_error, "Expected hash"]); }
 
         const commonAncestorFound = _(args.hashes).contains(hash);
 
@@ -44,7 +44,7 @@ module.exports = (args, cbk) => {
         if (firstLocalHashFound) {
           const hashes = trimmedHashList({hashes: moreRecent.reverse()})
 
-          return go_on([codes.not_found, {hashes}]);
+          return go_on([httpCodes.not_found, {hashes}]);
         }
 
         moreRecent.push(hash);

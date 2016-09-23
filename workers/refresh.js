@@ -11,7 +11,7 @@ const makeGetBlocksRequest = require("./make_get_blocks_request");
 const pathForNewerBlocks = require("./../routes/path_for_newer_blocks");
 const returnResult = require("./../libs/return_result");
 
-const codes = require("./../conf/http_status_codes");
+const httpCodes = require("./../conf/http_status_codes");
 const server = require("./../conf/server");
 
 /** Pull from a remote redundant peer, importing new blocks as we find them
@@ -43,7 +43,9 @@ module.exports = function(args, cbk) {
 
       const blockHash = res.getBestBlockHash;
 
-      if (!blockHash) { return go_on([codes.server_error, "Expected hash"]); }
+      if (!blockHash) {
+        return go_on([httpCodes.server_error, "Expected hash"]);
+      }
 
       return go_on(null, pathForNewerBlocks({after_hash: blockHash}));
     }],
@@ -54,13 +56,13 @@ module.exports = function(args, cbk) {
 
     importBlocks: ["requestNewerBlocks", (res, go_on) => {
       if (!res.requestNewerBlocks) {
-        return go_on([codes.server_error, "Expected newer blocks response"]);
+        return go_on([httpCodes.server_error, "Expected newer blocks"]);
       }
 
       if (!res.requestNewerBlocks.blocks) { return go_on(); }
 
       if (!Array.isArray(res.requestNewerBlocks.blocks)) {
-        return go_on([codes.server_error, "Expected blocks array"]);
+        return go_on([httpCodes.server_error, "Expected blocks array"]);
       }
 
       return eachSeries(res.requestNewerBlocks.blocks, (block, imported) => {
@@ -71,7 +73,7 @@ module.exports = function(args, cbk) {
 
     iteratePath: ["requestNewerBlocks", (res, go_on) => {
       if (!res.requestNewerBlocks || !res.requestNewerBlocks.iterate_path) {
-        return go_on([codes.server_error, "Expected iterate path"]);
+        return go_on([httpCodes.server_error, "Expected iterate path"]);
       }
 
       return go_on(null, res.requestNewerBlocks.iterate_path);

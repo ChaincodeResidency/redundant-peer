@@ -1,6 +1,6 @@
 const makeCoreRequest = require("./make_bitcoin_core_request");
 
-const codes = require("./../conf/http_status_codes");
+const httpCodes = require("./../conf/http_status_codes");
 const methods = require("./../conf/core_rpc_api_methods");
 
 const blockchainCache = require("./../cache/blockchain_cache");
@@ -19,7 +19,7 @@ const blockchainCache = require("./../cache/blockchain_cache");
   <null> // When the previous block is not stored
 */
 module.exports = (args, cbk) => {
-  if (!args.hash) { return cbk([codes.server_error, "Expected hash"]); }
+  if (!args.hash) { return cbk([httpCodes.server_error, "Expected hash"]); }
 
   const cachedPreviousHash = blockchainCache.previous_hashes[args.hash];
 
@@ -34,7 +34,7 @@ module.exports = (args, cbk) => {
     if (!!err) { return cbk(err); }
 
     if (!block.previousblockhash) {
-      return cbk([codes.server_error, "Expected previous hash", block]);
+      return cbk([httpCodes.server_error, "Expected previous hash", block]);
     }
 
     blockchainCache.previous_hashes[args.hash] = block.previousblockhash;

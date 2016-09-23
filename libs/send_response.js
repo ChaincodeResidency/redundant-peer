@@ -2,8 +2,8 @@ const _ = require("underscore");
 
 const logError = require("./log_error");
 
-const codes = require("./../conf/http_status_codes");
 const configuration = require("./../conf/server");
+const httpCodes = require("./../conf/http_status_codes");
 
 /** Respond to a request
 
@@ -22,15 +22,15 @@ const configuration = require("./../conf/server");
 module.exports = (args) => {
   return function(err, body) {
     if (!args.res) {
-      return logError({err: [codes.server_error, "Missing res"]});
+      return logError({err: [httpCodes.server_error, "Missing res"]});
     }
 
     const hasNonstandardError = !!err && !Array.isArray(err);
 
     if (hasNonstandardError) {
-      logError({err: [codes.server_error, "Invalid error", err]});
+      logError({err: [httpCodes.server_error, "Invalid error", err]});
 
-      return args.res.status(codes.server_error).send();
+      return args.res.status(httpCodes.server_error).send();
     }
 
     if (!!err) {
@@ -50,7 +50,7 @@ module.exports = (args) => {
 
     const hasNoContent = !body || (Array.isArray(body) && !body.length);
 
-    if (hasNoContent) { return args.res.status(codes.no_content).send(); }
+    if (hasNoContent) { return args.res.status(httpCodes.no_content).send(); }
 
     return args.res.send(body);
   }

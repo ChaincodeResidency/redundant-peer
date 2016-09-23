@@ -1,3 +1,5 @@
+const blockchain = require("./../conf/blockchain");
+
 /** Ephemeral blockchain data
 
   {
@@ -8,8 +10,10 @@
   }
 */
 module.exports = {
-  best_block_hash: null,
+  best_block_hash: blockchain.genesis_block_hash,
   previous_hashes: {},
-  serialized_blocks: {},
+  serialized_blocks: {
+    [blockchain.genesis_block_hash]: blockchain.serialized_genesis_block
+  },
 };
 
