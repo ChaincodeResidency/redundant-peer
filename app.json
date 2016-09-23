@@ -1,0 +1,13 @@
+{
+  "description": "This serves a light weight cache of the Bitcoin Blockchain",
+  "env": {
+    "REDUNDANT_PEER_SECRET": {
+      "description": "Secret key to use to authenticate to the cache.",
+      "generator": "secret"
+    }
+  },
+  "keywords": ["bitcoin"],
+  "name": "Light Cache Redundant Peer",
+  "repository": "https://github.com/HackerResidency/redundant-peer"
+}
+
