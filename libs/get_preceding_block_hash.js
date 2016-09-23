@@ -1,3 +1,4 @@
+const hasLocalCore = require("./has_local_core");
 const makeCoreRequest = require("./make_bitcoin_core_request");
 
 const httpCodes = require("./../conf/http_status_codes");
@@ -25,6 +26,8 @@ module.exports = (args, cbk) => {
 
   // Exit early when the previous hash is cached
   if (!!cachedPreviousHash) { return cbk(null, cachedPreviousHash); }
+
+  if (!hasLocalCore({})) { return cbk(); }
 
   return makeCoreRequest({
     method: methods.get_block,
