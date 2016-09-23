@@ -24,9 +24,9 @@ enforceMemoryLimit({
   memory_limit: configuration.node_memory_limit,
 });
 
-banNonstandardPeers({});
-
 if (!!hasLocalCore({})) {
+  banNonstandardPeers({});
+
   const credentials = require("./credentials");
 
   pullFromRemotePeers({remote_peers: credentials.remote_peers || []});
