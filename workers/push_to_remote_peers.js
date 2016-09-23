@@ -29,11 +29,11 @@ module.exports = (args) => {
   if (!Array.isArray(credentials.cache_peers)) { return; }
 
   return each(credentials.cache_peers, (peer, finishedPushing) => {
+    let lastGuessHash;
+    let lastBestHash;
+
     return forever(
       (completedPush) => {
-        let lastGuessHash;
-        let lastBestHash;
-
         return auto({
           // Get the local chain tip
           getBestBlockHash: (go_on) => {
@@ -46,8 +46,6 @@ module.exports = (args) => {
             if (lastBestHash === res.getBestBlockHash) {
               return go_on(exitEarlyFlag);
             }
-
-            lastBestHash = res.getBestBlockHash;
 
             return makeBestBlockHashRequest({
               hash: res.getBestBlockHash,
@@ -62,7 +60,7 @@ module.exports = (args) => {
             "getRemoteBestBlockHash",
             (res, go_on) =>
           {
-            return go_on(null, res.getBestBlockHash === res.getRemoteChainTip);
+            return go_on(null, !res.getRemoteBestBlockHash);
           }],
 
           // Pull the block that the remote tip references
@@ -143,12 +141,20 @@ module.exports = (args) => {
               return go_on(null, []);
             }
 
-            return go_on(null, res.getMissingBlocks || [bestGuessBlock]);
+            return go_on(null, res.getMissingBlocks.blocks || [bestGuessBlock]);
           }],
 
           // Send the blocks over the wire
-          makePushBlocksRequest: ["blocksToPush", (res, go_on) => {
-            if (!res.blocksToPush.length) { return go_on(); }
+          makePushBlocksRequest: [
+            "blocksToPush",
+            "getBestBlockHash",
+            (res, go_on) =>
+          {
+            if (!res.blocksToPush.length) {
+              lastBestHash = res.getBestBlockHash;
+
+              return go_on();
+            }
 
             return makePushBlocksRequest({
               blocks: res.blocksToPush,
