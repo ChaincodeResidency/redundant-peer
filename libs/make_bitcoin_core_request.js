@@ -24,7 +24,7 @@ module.exports = (args, cbk) => {
   }
 
   if (!hasLocalCore({})) {
-    return cbk([httpCodes.server_error, "Expected local Core"]);
+    return cbk([httpCodes.server_error, "Making core request requires Core"]);
   }
 
   credentials = credentials || require("./../credentials")

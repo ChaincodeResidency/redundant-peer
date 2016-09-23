@@ -1,6 +1,6 @@
 {
   "api_version": "v0",
-  "service_block_catchup_limit": 144,
+  "service_block_catchup_limit": 10,
   "default_serialized_blocks_count": 5,
   "error_delay_ms": 10,
   "log_format": ":method :url :status - :response-time ms - :user-agent",

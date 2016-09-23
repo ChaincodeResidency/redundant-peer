@@ -28,6 +28,8 @@ module.exports = (args, cbk) => {
     },
 
     importToCore: ["confirmHasLocalCore", (res, go_on) => {
+      if (!!args.trust) { return go_on(); }
+
       return coreRequest({
         method: method.submit_block,
         params: [args.block]

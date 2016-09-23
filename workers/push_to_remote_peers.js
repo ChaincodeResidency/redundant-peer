@@ -4,11 +4,13 @@ const forever = require("async/forever");
 
 const getBestBlockHash = require("./../libs/get_best_block_hash");
 const getBlock = require("./../libs/get_block");
+const getNewerBlocks = require("./../libs/get_newer_blocks");
 const hasLocalCore = require("./../libs/has_local_core");
 const logError = require("./../libs/log_error");
 const makeBestBlockHashRequest = require("./make_get_best_block_hash_request");
 const makePushBlocksRequest = require("./make_push_blocks_request");
 
+const httpCodes = require("./../conf/http_status_codes");
 const server = require("./../conf/server");
 
 /** Send blocks to remote peers
@@ -86,6 +88,7 @@ module.exports = (args) => {
 
           // When the remote is behind, pull some blocks to send
           getMissingBlocks: [
+            "getBestBlockHash",
             "getBestGuessBlock",
             "getRemoteBestBlockHash",
             "isRemoteAtBest",
@@ -96,10 +99,21 @@ module.exports = (args) => {
             }
 
             return getNewerBlocks({
+              catchup_limit: server.service_block_catchup_limit,
               hashes: [res.getRemoteBestBlockHash],
               limit: server.max_push_blocks
             },
-            go_on);
+            (err, blocks) => {
+              if (!!err) {
+                return getBlock({hash: res.getBestBlockHash}, (err, block) => {
+                  if (!!err) { return go_on(err); }
+
+                  return go_on(null, [block]);
+                });
+              }
+
+              return go_on(null, blocks);
+            });
           }],
 
           // Figure out which blocks should be sent, if any
