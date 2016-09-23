@@ -28,12 +28,12 @@ module.exports = (args, cbk) => {
     },
     (go_on) => {
       return getPrecedingBlockHash({
-        hash: _(moreRecent).last()
+          hash: _(moreRecent).last()
       },
       (err, hash) => {
         if (!!err) { return go_on(err); }
 
-        if (!hash) { return go_on([httpCodes.server_error, "Expected hash"]); }
+        if (!hash) { return go_on(null, gotAll = true); }
 
         const commonAncestorFound = _(args.hashes).contains(hash);
 
