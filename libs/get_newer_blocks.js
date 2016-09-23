@@ -1,6 +1,6 @@
 const _ = require("underscore");
 const asyncConstant = require("async/constant");
-const asyncMap = require("async/map");
+const map = require("async/map");
 const auto = require("async/auto");
 
 const findLaterHashes = require("./find_later_hashes");
@@ -110,7 +110,7 @@ module.exports = (args, cbk) => {
     getBlocksAfterHash: ["hashesWithinLimit", (res, go_on) => {
       if (!!res.isAlreadyBestHash) { return go_on(); }
 
-      return asyncMap(res.hashesWithinLimit, (hash, gotBlock) => {
+      return map(res.hashesWithinLimit, (hash, gotBlock) => {
         return getBlock({hash: hash}, gotBlock);
       },
       go_on);
@@ -123,7 +123,7 @@ module.exports = (args, cbk) => {
       (res, go_on) =>
     {
       const newerHashes = res.getHashesAfterHash;
-      const newerBlocks = res.getBlocksAfterHash;
+      const newerBlocks = _(res.getBlocksAfterHash).compact();
 
       const hasMore = !!newerHashes && newerHashes.length > newerBlocks.length;
 
