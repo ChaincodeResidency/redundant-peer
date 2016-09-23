@@ -39,7 +39,7 @@ module.exports = (req, res) => {
 
     if (!!err) { return commitResponse(err); }
 
-    if (res.isAlreadyAtChainTip) { return commitResponse(); }
+    if (res.getBestBlockHash === req.params.hash) { return commitResponse(); }
 
     return commitResponse(null, res.getBestBlockHash);
   });
