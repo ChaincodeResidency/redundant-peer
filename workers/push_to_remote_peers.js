@@ -13,6 +13,8 @@ const makePushBlocksRequest = require("./make_push_blocks_request");
 const httpCodes = require("./../conf/http_status_codes");
 const server = require("./../conf/server");
 
+const exitEarlyFlag = "exit_early";
+
 /** Send blocks to remote peers
 
   {}
@@ -30,6 +32,7 @@ module.exports = (args) => {
     return forever(
       (completedPush) => {
         let lastGuessHash;
+        let lastBestHash;
 
         return auto({
           // Get the local chain tip
@@ -39,6 +42,13 @@ module.exports = (args) => {
 
           // Get the remote chain tip
           getRemoteBestBlockHash: ["getBestBlockHash", (res, go_on) => {
+            // Exit early when we are just re-sending the same block info
+            if (lastBestHash === res.getBestBlockHash) {
+              return go_on(exitEarlyFlag);
+            }
+
+            lastBestHash = res.getBestBlockHash;
+
             return makeBestBlockHashRequest({
               hash: res.getBestBlockHash,
               host: peer.host
@@ -166,7 +176,7 @@ module.exports = (args) => {
           }],
         },
         (err) => {
-          if (!!err) { logError({err: err}); }
+          if (!!err && err !== exitEarlyFlag) { logError({err: err}); }
 
           return setTimeout(completedPush, server.push_timeout_ms);
         });
