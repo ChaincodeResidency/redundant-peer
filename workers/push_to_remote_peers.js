@@ -116,7 +116,7 @@ module.exports = (args) => {
                 return getBlock({hash: res.getBestBlockHash}, (err, block) => {
                   if (!!err) { return go_on(err); }
 
-                  return go_on(null, [block]);
+                  return go_on(null, {blocks: [block]});
                 });
               }
 
