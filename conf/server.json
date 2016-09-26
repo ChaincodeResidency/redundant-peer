@@ -3,6 +3,7 @@
   "service_block_catchup_limit": 288,
   "default_serialized_blocks_count": 5,
   "error_delay_ms": 10,
+  "blockchain_lag_exponent": 1.05,
   "log_format": ":method :url :status - :response-time ms - :user-agent",
   "max_service_serialized_blocks_count": 10,
   "max_service_receive_limit": "10mb",

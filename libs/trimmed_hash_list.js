@@ -1,3 +1,5 @@
+const server = require("./../conf/server");
+
 /** Reduce the size of a hash list by trimming old hashes
 
   {
@@ -25,7 +27,7 @@ module.exports = (args) => {
 
     trimmedHashes.push(hash);
 
-    ignoreAmount = Math.pow(ignoreAmount, 1.05);
+    ignoreAmount = Math.pow(ignoreAmount, server.blockchain_lag_exponent);
 
     ignoreNext = ignoreAmount;
   });
