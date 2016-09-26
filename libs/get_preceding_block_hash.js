@@ -1,6 +1,7 @@
 const hasLocalCore = require("./has_local_core");
 const makeCoreRequest = require("./make_bitcoin_core_request");
 
+const coreErrorCodes = require("./../conf/core_error_codes");
 const httpCodes = require("./../conf/http_status_codes");
 const methods = require("./../conf/core_rpc_api_methods");
 
@@ -17,7 +18,7 @@ const blockchainCache = require("./../cache/blockchain_cache");
 
   OR
 
-  <null> // When the previous block is not stored
+  <null> // When the previous block is not stored or there is a Core RPC error
 */
 module.exports = (args, cbk) => {
   if (!args.hash) { return cbk([httpCodes.server_error, "Expected hash"]); }
@@ -30,11 +31,14 @@ module.exports = (args, cbk) => {
   if (!hasLocalCore({})) { return cbk(); }
 
   return makeCoreRequest({
+    ignore_error_code: coreErrorCodes.rpc_internal_error,
     method: methods.get_block,
     params: [args.hash, true]
   },
   (err, block) => {
     if (!!err) { return cbk(err); }
+
+    if (!block) { return cbk(); }
 
     if (!block.previousblockhash) {
       return cbk([httpCodes.server_error, "Expected previous hash", block]);

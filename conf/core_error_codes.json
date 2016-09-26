@@ -1,4 +1,5 @@
 {
-  "invalid_address_or_key": -5
+  "invalid_address_or_key": -5,
+  "rpc_internal_error": -32603
 }
 

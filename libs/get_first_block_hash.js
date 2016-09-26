@@ -59,7 +59,9 @@ module.exports = (args, cbk) => {
       if (!res.hasLocalCore) { return go_on(); }
 
       const currentHeight = res.getChainInfo.blocks;
-      const localHeight = res.getChainInfo.pruneheight || [].length;
+      const pruneHeight = res.getChainInfo.pruneheight;
+
+      const localHeight = !!pruneHeight ? pruneHeight - 1 : [].length;
 
       if (!!args.max_depth) {
         const maxDepthHeight = currentHeight - args.max_depth;
