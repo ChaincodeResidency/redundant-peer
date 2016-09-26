@@ -19,6 +19,10 @@ const httpCodes = require("./../conf/http_status_codes");
   Array<Block Hash String>
 */
 module.exports = (args, cbk) => {
+  if (!args.after || !args.before || !Array.isArray(args.hashes)) {
+    return cbk([httpCodes.server_error, "Expected after, before, and hashes"]);
+  }
+
   let gotAll = false;
   const moreRecent = [args.before];
 

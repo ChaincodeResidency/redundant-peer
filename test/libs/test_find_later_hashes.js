@@ -4,7 +4,9 @@ const auto = require("async/auto");
 const vows = require("vows");
 
 const findLaterHashes = require("./../../libs/find_later_hashes");
+const getBestBlockHash = require("./../../libs/get_best_block_hash");
 const getFirstBlockHash = require("./../../libs/get_first_block_hash");
+const getPrecedingBlockHash = require("./../../libs/get_preceding_block_hash");
 
 vows
   .describe("Test Find Later Hashes")
@@ -56,7 +58,7 @@ vows
             return findLaterHashes({
               after: res.getPrecedingBlockHash,
               before: res.getBestBlockHash,
-              hashes: res.getPrecedingBlockHash
+              hashes: [res.getPrecedingBlockHash]
             },
             go_on);
           }]
