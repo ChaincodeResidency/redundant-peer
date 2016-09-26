@@ -16,7 +16,7 @@ vows
             return getFirstBlockHash({}, go_on);
           },
 
-          getPrecedingHash: ["getFirstBlockHash", (res, go_on) => {
+          getLaterHashes: ["getFirstBlockHash", (res, go_on) => {
             return findLaterHashes({
               after: res.getFirstBlockHash,
               before: res.getFirstBlockHash,
@@ -29,11 +29,47 @@ vows
       },
 
       "there is no error": (err, res) => {
-        return assertDeepEqual(null, err);
+        return assertDeepEqual(err, null);
       },
 
       "only the current hash is returned": (err, res) => {
-        return assertDeepEqual(res.getPrecedingHash, [res.getFirstBlockHash]);
+        return assertDeepEqual(res.getLaterHashes, [res.getFirstBlockHash]);
+      }
+    },
+
+    "When there is a preceding hash": {
+      topic: function() {
+        return auto({
+          getBestBlockHash: (go_on) => {
+            return getBestBlockHash({}, go_on);
+          },
+
+          getPrecedingBlockHash: ["getBestBlockHash", (res, go_on) => {
+            return getPrecedingBlockHash({hash: res.getBestBlockHash}, go_on);
+          }],
+
+          getLaterHashes: [
+            "getBestBlockHash",
+            "getPrecedingBlockHash",
+            (res, go_on) =>
+          {
+            return findLaterHashes({
+              after: res.getPrecedingBlockHash,
+              before: res.getBestBlockHash,
+              hashes: res.getPrecedingBlockHash
+            },
+            go_on);
+          }]
+        },
+        this.callback);
+      },
+
+      "there is no error": (err, res) => {
+        return assertDeepEqual(err, null);
+      },
+
+      "a later hash is returned": (err, res) => {
+        return assertDeepEqual(res.getLaterHashes, [res.getBestBlockHash]);
       }
     }
   })
