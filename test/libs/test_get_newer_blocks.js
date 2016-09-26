@@ -63,9 +63,11 @@ vows
         this.callback);
       },
 
-      "no blocks are returned": (err, res) => {
-        assertDeepEqual(err, null);
+      "no error is encountered": (err, res) => {
+        return assertDeepEqual(err, null);
+      },
 
+      "no blocks are returned": (err, res) => {
         const newerBlocks = res.getNewerBlocks;
 
         assertDeepEqual(newerBlocks.has_more, false);

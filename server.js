@@ -5,7 +5,6 @@ const express = require("express");
 const logger = require("morgan");
 const responseTime = require("response-time");
 
-const banNonstandardPeers = require("./workers/ban_nonstandard_peers");
 const hasLocalCore = require("./libs/has_local_core");
 const enforceMemoryLimit = require("./libs/enforce_memory_limit");
 const pullFromRemotePeers = require("./workers/pull_from_remote_peers");
@@ -25,8 +24,6 @@ enforceMemoryLimit({
 });
 
 if (!!hasLocalCore({})) {
-  banNonstandardPeers({});
-
   const credentials = require("./credentials");
 
   pullFromRemotePeers({remote_peers: credentials.remote_peers || []});

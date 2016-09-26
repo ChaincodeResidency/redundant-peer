@@ -129,7 +129,7 @@ module.exports = (args, cbk) => {
 
       return go_on(null, {
         best_block_hash: res.getBestBlockHash,
-        blocks: newerBlocks,
+        blocks: !newerBlocks || !newerBlocks.length ? null : newerBlocks,
         has_more: hasMore,
         highest_block_hash: res.highestBlockHash
       });
