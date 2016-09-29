@@ -2,11 +2,32 @@
 
 Offers a redundant networking layer for spreading the Blockchain, as an alternative to the Bitcoin peer to peer network.
 
-Redundant Peers have three optional roles:
+Redundant Peers have three optional, configurable roles:
 
 1. Service Blockchain Requests
 2. Push Blockchain Data
 3. Retrieve and import Blockchain Data
+
+## Install And Run Service
+
+    $ npm install
+    $ npm start
+
+## Configure Service
+
+Create a ./credentials.json file next to the service.js file.
+
+Set strings *bitcoin_core_rpc_password* and *bitcoin_core_rpc_user* if a local Core instance is present. Set *cache_peers* to an array with *host* and *secret* strings to push blockchain data at caching instances. Set *remote_peers* to an array of strings to poll blockchain data from remote peers.
+
+    {
+      "bitcoin_core_rpc_password": "$rpcPassword",
+      "bitcoin_core_rpc_user": "$rpcUser",
+      "cache_peers": [{
+        "host": "https://service-to-push-to.example.com",
+        "secret": "$serviceSecret"
+      }],
+      "remote_peers": ["https://service-to-poll.example.com"]
+    }
 
 ## Light Weight Cache Mode
 

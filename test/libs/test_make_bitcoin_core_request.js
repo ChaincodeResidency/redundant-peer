@@ -14,7 +14,10 @@ vows
   .addBatch({
     "When making a Bitcoin Core request": {
       topic: function() {
-        makeBitcoinCoreRequest({method: methods.get_info}, this.callback);
+        return makeBitcoinCoreRequest({
+          method: methods.get_blockchain_info
+        },
+        this.callback);
       },
 
       "there is no error": (err, res) => {

@@ -7,8 +7,10 @@ const responseTime = require("response-time");
 
 const hasLocalCore = require("./libs/has_local_core");
 const enforceMemoryLimit = require("./libs/enforce_memory_limit");
+const printServiceConfiguration = require("./libs/print_service_config");
 const pullFromRemotePeers = require("./workers/pull_from_remote_peers");
 const pushToRemotePeers = require("./workers/push_to_remote_peers");
+const serviceConfiguration = require("./libs/service_configuration");
 const v0 = require("./routes/main");
 
 const appPackage = require("./package");
@@ -23,11 +25,25 @@ enforceMemoryLimit({
   memory_limit: configuration.node_memory_limit,
 });
 
+let credentials;
+
 if (!!hasLocalCore({})) {
-  const credentials = require("./credentials");
+  credentials = require("./credentials");
 
   pullFromRemotePeers({remote_peers: credentials.remote_peers || []});
 }
+
+const serviceType = serviceConfiguration({
+  credentials: credentials,
+  service_secret: process.env.REDUNDANT_PEER_SECRET
+});
+
+printServiceConfiguration({
+  is_light_mode: serviceType.is_light_mode,
+  is_missing_secret: serviceType.is_missing_secret,
+  polling_count: serviceType.polling_count,
+  pushing_count: serviceType.pushing_count
+});
 
 pushToRemotePeers({});
 
