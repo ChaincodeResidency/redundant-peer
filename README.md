@@ -13,7 +13,7 @@ Redundant Peers have three optional, configurable roles:
     $ npm install
     $ npm start
 
-## Configure Service
+## Configuration
 
 Create a ./credentials.json file next to the service.js file.
 
@@ -27,6 +27,12 @@ Set strings *bitcoin_core_rpc_password* and *bitcoin_core_rpc_user* if a local C
         "secret": "$serviceSecret"
       }],
       "remote_peers": ["https://service-to-poll.example.com"]
+    }
+
+As an alternative to setting the bitcoin password and user directly, specify the *bitcoin_core_rpc_cookie_path* to authenticate with the generated RPC authentication cookie.
+
+    {
+      "bitcoin_core_rpc_cookie_path": "/path/to/bitcoin/data/directory/.cookie"
     }
 
 ## Light Weight Cache Mode

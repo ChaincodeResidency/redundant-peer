@@ -1,10 +1,12 @@
+const executeAsyncOperationsWithDependencies = require("async/auto");
 const BitcoinCoreClient = require("bitcoin").Client;
 
+const getCookieCredentials = require("./get_cookie_credentials");
 const hasLocalCore = require("./has_local_core");
+const returnResult = require("./return_result");
 
 const httpCodes = require("./../conf/http_status_codes");
 
-let client = null;
 let credentials = null;
 
 /** Make a request to the local Bitcoin Core
@@ -19,36 +21,82 @@ let credentials = null;
   <Response Object>
 */
 module.exports = (args, cbk) => {
-  if (!args.method) {
-    return cbk([httpCodes.server_error, "Expected method", args]);
-  }
+  return executeAsyncOperationsWithDependencies({
+    validateArguments: (go_on) => {
+      if (!args.method) {
+        return go_on([httpCodes.server_error, "Expected method", args]);
+      }
 
-  if (!hasLocalCore({})) {
-    return cbk([httpCodes.server_error, "Missing Core", args]);
-  }
+      if (!hasLocalCore({})) {
+        return go_on([httpCodes.server_error, "Missing Core", args]);
+      }
 
-  credentials = credentials || require("./../credentials")
+      return go_on();
+    },
 
-  const pass = credentials.bitcoin_core_rpc_password;
-  const user = credentials.bitcoin_core_rpc_user;
+    configuredCredentials: ["validateArguments", (res, go_on) => {
+      credentials = credentials || require("./../credentials");
 
-  client = client || new BitcoinCoreClient({pass, user});
+      return go_on(null, credentials);
+    }],
 
-  const method = args.method;
-  const params = args.params || [];
+    configuredAuth: ["configuredCredentials", (res, go_on) => {
+      if (!!res.configuredCredentials.bitcoin_core_rpc_cookie_path) {
+        return go_on();
+      }
 
-  return client.cmd([{method, params}], (err, response) => {
-    if (!!err) {
-      if (!!err.code && err.code === args.ignore_error_code) { return cbk(); }
+      return go_on(null, {
+        pass: res.configuredCredentials.bitcoin_core_rpc_password,
+        user: res.configuredCredentials.bitcoin_core_rpc_user
+      });
+    }],
 
-      return cbk([
-        httpCodes.server_error,
-        "Bitcoin Core Data",
-        {code: err.code, message: err.message}
-      ]);
-    }
+    getCookieAuth: ["configuredCredentials", (res, go_on) => {
+      if (!res.configuredCredentials.bitcoin_core_rpc_cookie_path) {
+        return go_on();
+      }
 
-    return cbk(null, response);
-  });
+      return getCookieCredentials({
+        cookie_path: credentials.bitcoin_core_rpc_cookie_path
+      },
+      go_on);
+    }],
+
+    credentials: ["configuredAuth", "getCookieAuth", (res, go_on) => {
+      let auth = res.configuredAuth || res.getCookieAuth;
+
+      if (!auth || !auth.user || !auth.pass) {
+        return go_on([httpCodes.server_error, "Expected RPC auth"]);
+      }
+
+      go_on(null, auth);
+    }],
+
+    makeCoreRequest: ["credentials", (res, go_on) => {
+      const client = new BitcoinCoreClient({
+        pass: res.credentials.pass,
+        user: res.credentials.user
+      });
+
+      const method = args.method;
+      const params = args.params || [];
+
+      return client.cmd([{method, params}], (err, response) => {
+        // Exit early when ignoring an expected error
+        if (!!err && err.code === args.ignore_error_code) { return go_on(); }
+
+        if (!!err) {
+          return go_on([
+            httpCodes.server_error,
+            "Bitcoin Core Error",
+            {code: err.code, message: err.message}
+          ]);
+        }
+
+        return go_on(null, response);
+      });
+    }]
+  },
+  returnResult({result: "makeCoreRequest"}, cbk));
 };
 
